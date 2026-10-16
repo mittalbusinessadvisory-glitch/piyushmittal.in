@@ -567,7 +567,7 @@ posts.forEach((p) => {
   emit(path, layout({
     path,
     nav: '/insights/',
-    title: `${p.title} | ${site.name}`,
+    title: `${p.seoTitle || p.title} | ${site.name}`,
     image: p.image,
     hero: preloadImg(p.image, 'cover-img'),
     description: p.description,

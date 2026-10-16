@@ -342,6 +342,7 @@ export const posts = [
   },
   {
     slug: 'why-your-website-is-not-generating-leads',
+    seoTitle: 'Why your website isn\'t generating leads',
     related: ['website-development', 'online-presence-lead-generation'],
     image: img.webLeads,
     title: 'Why your website isn\'t generating leads (and what to fix first)',

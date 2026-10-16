@@ -87,7 +87,7 @@ const breadcrumb = (trail) => ({
 
 const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '', scripts = [] }) {
+function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '', scripts = [], bot = true }) {
   const shareImage = image ? abs(image.src) : abs('/assets/og-image.jpg');
   const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
@@ -172,7 +172,7 @@ ${body}
 <a class="fab-wa" href="${waHref}?text=${encodeURIComponent('Hi Piyush, I found your website and would like to talk about my business.')}" target="_blank" rel="noopener" aria-label="Chat with ${esc(site.name)} on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7Zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.6.7.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5 0-.2-.3-.3-.6-.4Z"/></svg><span>Chat on WhatsApp</span></a>
 <button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5m-4.5 4.5L10 5l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <script src="/assets/site.js" defer></script>
-<script src="/assets/bot.js" defer></script>${scripts.map((s) => `
+${bot ? '<script src="/assets/bot.js" defer></script>' : ''}${scripts.map((s) => `
 <script src="${s}" defer></script>`).join('')}
 </body>
 </html>
@@ -699,6 +699,7 @@ emit('/office/', layout({
   description: "Visit Piyush Mittal's virtual office: tell the front desk what you need, get a visitor slip and have it delivered to Piyush's cabin.",
   schema: [breadcrumb([['Office', '/office/']]), { '@type': 'ContactPage', url: abs('/office/'), name: `Virtual office of ${site.name}`, about: { '@id': PERSON_ID } }],
   scripts: ['/assets/office.js'],
+  bot: false, // Riya runs the front desk here
   body: officeBody({ site, esc, waHref, ARROW, crumbs }),
 }), { priority: '0.8' });
 

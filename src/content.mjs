@@ -255,44 +255,6 @@ export const services = [
   },
 ];
 
-// TODO: Review these case studies and replace the wording with your exact scope and real results/metrics.
-export const work = [
-  {
-    slug: 'tripzivo',
-    client: 'Tripzivo',
-    sector: 'Travel',
-    title: 'Building a travel brand\'s online presence from the ground up',
-    summary: 'Brand website, enquiry flow and search foundations for a travel business that needed to look credible and capture trip enquiries online.',
-    services: ['Website Development', 'Digital Marketing & SEO', 'Online Presence & Lead Generation'],
-    challenge:
-      'Travel is a trust purchase. A new travel brand competes with large aggregators and established agencies, so the website had to establish credibility fast and make it effortless for a visitor to ask about a trip.',
-    approach: [
-      'Mapped how travellers research and decide, and structured the site around destinations and trip types rather than an internal menu.',
-      'Designed clear enquiry paths on every key page so interest could turn into a conversation.',
-      'Set up technical SEO foundations — metadata, structured data, sitemap — so destination pages could be discovered in search.',
-    ],
-    outcome:
-      'A credible, mobile-first website and an enquiry flow the business can grow its marketing on.', // TODO: add measurable results
-  },
-  {
-    slug: 'gobind-coach-builders',
-    client: 'Gobind Coach Builders',
-    sector: 'Manufacturing',
-    title: 'Giving a manufacturing business a digital front door',
-    summary: 'A professional website for a coach-building business, designed to present capability clearly to B2B buyers and generate qualified enquiries.',
-    services: ['Website Development', 'Online Presence & Lead Generation'],
-    challenge:
-      'Manufacturing businesses often win work through relationships, but buyers increasingly check a company online before they call. The business needed a site that communicated capability, quality and trust to serious buyers.',
-    approach: [
-      'Organised content around what buyers evaluate: products, capability, process and credibility.',
-      'Built a fast, responsive website with clear calls to action for enquiries.',
-      'Added search-friendly structure so the business can be found for its product categories and location.',
-    ],
-    outcome:
-      'A professional online presence that supports sales conversations and gives prospective buyers a reason to reach out.', // TODO: add measurable results
-  },
-];
-
 export const posts = [
   {
     slug: 'where-small-businesses-should-start-with-ai',

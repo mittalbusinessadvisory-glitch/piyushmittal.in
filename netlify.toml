@@ -7,6 +7,12 @@
 
 # The bare domain -> www redirect is handled by Netlify: www.piyushmittal.in is set as the primary domain.
 
+# The Work section was removed; send old links and search results to the homepage.
+[[redirects]]
+  from = "/work/*"
+  to = "/"
+  status = 301
+
 [[headers]]
   for = "/*"
   [headers.values]

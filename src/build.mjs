@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './config.mjs';
-import { services, work, posts } from './content.mjs';
+import { services, posts } from './content.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'dist');
@@ -46,7 +46,7 @@ const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d
 
 function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false }) {
   const url = abs(path);
-  const navItems = [['Services', '/services/'], ['Work', '/work/'], ['About', '/about/'], ['Insights', '/insights/']];
+  const navItems = [['Services', '/services/'], ['About', '/about/'], ['Insights', '/insights/']];
   const jsonld = { '@context': 'https://schema.org', '@graph': schema };
   return `<!doctype html>
 <html lang="en-IN">
@@ -116,7 +116,7 @@ ${body}
       </div>
       <div>
         <p class="footer-h">Explore</p>
-        <ul><li><a href="/work/">Work</a></li><li><a href="/about/">About</a></li><li><a href="/insights/">Insights</a></li><li><a href="/contact/">Contact</a></li></ul>
+        <ul><li><a href="/about/">About</a></li><li><a href="/insights/">Insights</a></li><li><a href="/contact/">Contact</a></li></ul>
       </div>
       ${site.profiles.length ? `<div><p class="footer-h">Elsewhere</p><ul>${site.profiles.map((p) => `<li><a href="${p.url}" rel="me noopener" target="_blank">${esc(p.label)}</a></li>`).join('')}</ul></div>` : ''}
     </div>
@@ -154,17 +154,6 @@ const postCard = (p) => `
     <h3>${esc(p.title)}</h3>
     <p>${esc(p.description)}</p>
     <span class="link">Read article ${ARROW}</span>
-  </a>
-</article>`;
-
-const workCard = (w, i) => `
-<article class="work-card" data-reveal>
-  <a href="/work/${w.slug}/">
-    <div class="work-visual v${(i % 3) + 1}" aria-hidden="true"><span>${esc(w.client)}</span></div>
-    <p class="meta"><span class="tag">${esc(w.sector)}</span>${w.services.slice(0, 2).map(esc).join(' · ')}</p>
-    <h3>${esc(w.title)}</h3>
-    <p>${esc(w.summary)}</p>
-    <span class="link">Read case study ${ARROW}</span>
   </a>
 </article>`;
 
@@ -372,63 +361,6 @@ services.forEach((s, idx) => {
 </section>
 ${ctaBand()}`,
   }), { priority: '0.8' });
-});
-
-/* ---------------- Work ---------------- */
-emit('/work/', layout({
-  path: '/work/',
-  nav: '/work/',
-  title: `Work & Case Studies | ${site.name}`,
-  description: 'Case studies from Piyush Mittal — websites, lead generation and growth projects for small businesses in travel, manufacturing and services.',
-  schema: [breadcrumb([['Work', '/work/']])],
-  body: `
-<section class="page-hero">
-  <div class="wrap">
-    ${crumbs([['Work', '/work/']])}
-    <p class="eyebrow" data-reveal>Work</p>
-    <h1 data-reveal>Projects that started with a <em>business problem</em></h1>
-    <p class="lede" data-reveal>Each project below began with a question about customers, credibility or growth — and ended with something built and running.</p>
-  </div>
-</section>
-<section class="section pt0"><div class="wrap"><div class="card-grid">${work.map(workCard).join('')}</div></div></section>
-${ctaBand('Want results like these?')}`,
-}), { priority: '0.8' });
-
-work.forEach((w, i) => {
-  const path = `/work/${w.slug}/`;
-  emit(path, layout({
-    path,
-    nav: '/work/',
-    title: `${w.client} Case Study — ${w.sector} | ${site.name}`,
-    description: w.summary,
-    type: 'article',
-    schema: [breadcrumb([['Work', '/work/'], [w.client, path]]), { '@type': 'Article', headline: w.title, description: w.summary, url: abs(path), author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, about: w.services }, person],
-    body: `
-<section class="page-hero">
-  <div class="wrap">
-    ${crumbs([['Work', '/work/'], [w.client, path]])}
-    <p class="eyebrow" data-reveal>${esc(w.client)} · ${esc(w.sector)}</p>
-    <h1 data-reveal>${esc(w.title)}</h1>
-    <p class="lede" data-reveal>${esc(w.summary)}</p>
-  </div>
-</section>
-<section class="section pt0">
-  <div class="wrap">
-    <div class="work-visual big v${(i % 3) + 1}" data-reveal aria-hidden="true"><span>${esc(w.client)}</span></div>
-    <div class="case">
-      <aside class="case-meta" data-reveal>
-        <dl><dt>Client</dt><dd>${esc(w.client)}</dd><dt>Sector</dt><dd>${esc(w.sector)}</dd><dt>Services</dt><dd>${w.services.map(esc).join('<br>')}</dd></dl>
-      </aside>
-      <div class="prose" data-reveal>
-        <h2>The challenge</h2><p>${esc(w.challenge)}</p>
-        <h2>The approach</h2><ul>${w.approach.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
-        <h2>The outcome</h2><p>${esc(w.outcome)}</p>
-      </div>
-    </div>
-  </div>
-</section>
-${ctaBand()}`,
-  }), { priority: '0.7' });
 });
 
 /* ---------------- About ---------------- */

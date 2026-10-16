@@ -1,6 +1,7 @@
 // Zero-dependency static site generator. Run: node src/build.mjs  → outputs ./dist
 import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './config.mjs';
@@ -9,6 +10,10 @@ import { services, posts, healthCheck, engagements, homeFaqs } from './content.m
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'dist');
 const today = new Date().toISOString().slice(0, 10);
+// Sitemap dates: last commit that touched the site source, not the build time
+let siteUpdated = today;
+try { siteUpdated = execSync('git log -1 --format=%cs -- src', { cwd: root }).toString().trim() || today; } catch {}
+const PRIVACY_UPDATED = '2026-10-16'; // change only when the policy text changes
 const pages = []; // for sitemap
 
 if (existsSync(out)) rmSync(out, { recursive: true });
@@ -44,6 +49,7 @@ const portrait = (eager = false) =>
 const avatar = (cls = 'avatar') => `<img class="${cls}" src="${site.headshot}" alt="" width="64" height="64" loading="lazy" decoding="async">`;
 
 const PERSON_ID = abs('/#person');
+const BUSINESS_ID = abs('/#business');
 const WEBSITE_ID = abs('/#website');
 const person = {
   '@type': 'Person',
@@ -56,8 +62,19 @@ const person = {
   telephone: site.phoneE164,
   image: abs(site.photo),
   knowsAbout: site.knowsAbout,
+  worksFor: { '@id': BUSINESS_ID },
   address: { '@type': 'PostalAddress', addressCountry: site.location.country, ...(site.location.locality && { addressLocality: site.location.locality }), ...(site.location.region && { addressRegion: site.location.region }) },
   ...(site.profiles.length && { sameAs: site.profiles.map((p) => p.url) }),
+};
+const business = {
+  '@type': 'ProfessionalService', '@id': BUSINESS_ID, name: `${site.name} — ${site.tagline}`, url: abs('/'),
+  description: site.description, image: abs(site.photo), logo: abs('/assets/apple-touch-icon.png'),
+  email: site.email, telephone: site.phoneE164, founder: { '@id': PERSON_ID },
+  areaServed: { '@type': 'Country', name: site.location.country },
+  address: { '@type': 'PostalAddress', addressCountry: site.location.country, ...(site.location.locality && { addressLocality: site.location.locality }) },
+  knowsAbout: site.knowsAbout,
+  ...(site.profiles.length && { sameAs: site.profiles.map((p) => p.url) }),
+  hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Services', itemListElement: services.map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.title, url: abs(`/services/${s.slug}/`) } })) },
 };
 const website = { '@type': 'WebSite', '@id': WEBSITE_ID, url: abs('/'), name: site.name, alternateName: `${site.name} — ${site.tagline}`, description: site.description, publisher: { '@id': PERSON_ID }, inLanguage: 'en-IN' };
 const breadcrumb = (trail) => ({
@@ -68,7 +85,7 @@ const breadcrumb = (trail) => ({
 const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '' }) {
-  const shareImage = image ? abs(image.src) : abs('/assets/og-image.png');
+  const shareImage = image ? abs(image.src) : abs('/assets/og-image.jpg');
   const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
   const navItems = [['Services', '/services/'], ['About', '/about/'], ['Insights', '/insights/']];
@@ -112,7 +129,7 @@ ${schema.length ? `<script type="application/ld+json">${JSON.stringify(jsonld)}<
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/" aria-label="${esc(site.name)} — home"><span class="brand-mark" aria-hidden="true">PM</span><span class="brand-name">${esc(site.name)}</span></a>
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">PM</span><span class="brand-name">${esc(site.name)}</span></a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span class="sr">Menu</span><span class="bars" aria-hidden="true"></span></button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
       ${navItems.map(([l, h]) => `<a href="${h}"${nav === h ? ' aria-current="page"' : ''}>${l}</a>`).join('')}
@@ -157,7 +174,7 @@ ${body}
 `;
 }
 
-function emit(path, html, { priority = '0.7', lastmod = today, sitemap = true } = {}) {
+function emit(path, html, { priority = '0.7', lastmod = siteUpdated, sitemap = true } = {}) {
   const file = path.endsWith('.html') || path.endsWith('.xml') ? join(out, path) : join(out, path, 'index.html');
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
@@ -225,7 +242,7 @@ emit('/', layout({
   nav: '/',
   title: `${site.name} — Business Growth & AI Solutions Consultant`,
   description: site.description,
-  schema: [website, person, { '@type': 'WebPage', '@id': abs('/#webpage'), url: abs('/'), name: `${site.name} — ${site.tagline}`, isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID }, inLanguage: 'en-IN' }, { '@type': 'FAQPage', '@id': abs('/#faq'), mainEntity: homeFaqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }],
+  schema: [website, person, business, { '@type': 'WebPage', '@id': abs('/#webpage'), url: abs('/'), name: `${site.name} — ${site.tagline}`, isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID }, inLanguage: 'en-IN' }, { '@type': 'FAQPage', '@id': abs('/#faq'), mainEntity: homeFaqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }],
   body: `
 <section class="hero">
   <div class="wrap hero-grid">
@@ -233,7 +250,7 @@ emit('/', layout({
       <p class="eyebrow" data-reveal>${esc(site.tagline)}</p>
       <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)}.</span> I find what's holding your business back — and build <em>the fix</em>.</h1>
       <p class="lede" data-reveal>${esc(site.message)} I work with small businesses on strategy, websites, marketing and AI automation — whatever the problem actually needs.</p>
-      <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>page one on Google</span><span>a business that runs without you</span></span></p>
+      <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>more customers from Google</span><span>a business that runs without you</span></span></p>
       <div class="hero-actions" data-reveal>
         <a class="btn" href="${ctaHref}"${ctaAttrs}>Book a free strategy call ${ARROW}</a>
         <a class="btn btn-ghost" href="/services/">See how I help</a>
@@ -314,7 +331,7 @@ emit('/', layout({
       <div><dt><span data-count="7">7</span></dt><dd>services under one roof — no hand-offs between agencies</dd></div>
       <div><dt><span data-count="30">30</span><small>min</small></dt><dd>free first call to diagnose your biggest problem</dd></div>
       <div><dt><span data-count="24">24</span><small>h</small></dt><dd>maximum reply time to every message</dd></div>
-      <div><dt><span data-count="100">100</span><small>%</small></dt><dd>fixed-price proposals — no surprise bills</dd></div>
+      <div><dt><span data-count="1">1</span></dt><dd>person from first call to launch — the one who diagnoses also builds</dd></div>
     </dl>
   </div>
 </section>
@@ -540,7 +557,7 @@ emit('/insights/', layout({
     <p class="lede" data-reveal>No hype, no jargon. What I'm seeing work for small businesses — and what isn't worth your money yet.</p>
   </div>
 </section>
-<section class="section pt0"><div class="wrap"><div class="card-grid three">${posts.map(postCard).join('')}</div></div></section>
+<section class="section pt0"><div class="wrap"><h2 class="sr">All articles</h2><div class="card-grid three">${posts.map(postCard).join('')}</div></div></section>
 ${ctaBand()}`,
 }), { priority: '0.8' });
 
@@ -616,8 +633,9 @@ emit('/contact/', layout({
     </div>
     <form class="contact-form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="_gotcha" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
       <input type="hidden" name="form-name" value="contact">
-      <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
-      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required data-label="your name" aria-describedby="f-name-err"><span class="field-err" id="f-name-err"></span></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required data-label="your email" aria-describedby="f-email-err"><span class="field-err" id="f-email-err"></span></div>
+      <div class="field"><label for="f-phone">Phone / WhatsApp <span>(optional, for a quicker reply)</span></label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+91"></div>
       <div class="field"><label for="f-company">Business / website <span>(optional)</span></label><input id="f-company" name="company" autocomplete="organization"></div>
       <div class="field"><label for="f-topic">What can I help with?</label>
         <select id="f-topic" name="topic">
@@ -625,9 +643,10 @@ emit('/contact/', layout({
           ${services.map((s) => `<option>${esc(s.title)}</option>`).join('')}
           <option>Professional opportunity / collaboration</option>
         </select></div>
-      <div class="field"><label for="f-msg">What's the problem or opportunity?</label><textarea id="f-msg" name="message" rows="5" required></textarea></div>
+      <div class="field"><label for="f-msg">What's the problem or opportunity?</label><textarea id="f-msg" name="message" rows="5" required data-label="a short message" aria-describedby="f-msg-err"></textarea><span class="field-err" id="f-msg-err"></span></div>
       <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="btn" type="submit">Send message ${ARROW}</button>
+      <p class="consent">By sending, you agree to the <a href="/privacy/">privacy policy</a>. Your details are only used to reply to you.</p>
       <p class="form-status" role="status" aria-live="polite"></p>
     </form>
   </div>
@@ -663,7 +682,7 @@ emit('/privacy/', layout({
     <p>The business health check and savings calculator run entirely in your browser. Your answers are not sent anywhere.</p>
     <h2>Your choices</h2>
     <p>You can ask me to see, correct or delete anything you've sent me at any time: <a href="mailto:${site.email}">${site.email}</a>.</p>
-    <p class="muted small">Last updated ${fmtDate(today)}.</p>
+    <p class="muted small">Last updated ${fmtDate(PRIVACY_UPDATED)}.</p>
   </div>
 </section>`,
 }), { priority: '0.3' });
@@ -698,12 +717,41 @@ Sitemap: ${abs('/sitemap.xml')}
 `);
 
 writeFileSync(join(out, 'insights', 'feed.xml'), `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>
 <title>${esc(site.name)} — Insights</title><link>${abs('/insights/')}</link><description>Notes on business growth, AI and small business.</description><language>en-in</language>
 <atom:link href="${abs('/insights/feed.xml')}" rel="self" type="application/rss+xml"/>
-${posts.map((p) => `<item><title>${esc(p.title)}</title><link>${abs(`/insights/${p.slug}/`)}</link><guid>${abs(`/insights/${p.slug}/`)}</guid><pubDate>${new Date(p.date).toUTCString()}</pubDate><description>${esc(p.description)}</description></item>`).join('\n')}
+${posts.map((p) => `<item><title>${esc(p.title)}</title><link>${abs(`/insights/${p.slug}/`)}</link><guid>${abs(`/insights/${p.slug}/`)}</guid><pubDate>${new Date(p.date).toUTCString()}</pubDate><description>${esc(p.description)}</description><content:encoded><![CDATA[${p.image ? `<img src="${abs(p.image.src)}" alt="${esc(p.image.alt)}">` : ''}${p.body}]]></content:encoded></item>`).join('\n')}
 </channel></rss>
 `);
+
+// Plain-language facts for AI assistants and answer engines (https://llmstxt.org)
+writeFileSync(join(out, 'llms.txt'), `# ${site.name}
+
+> ${site.description}
+
+Role: ${site.jobTitle}, based in ${site.location.locality ? site.location.locality + ', ' : ''}${site.location.country}. Works with small and owner-led businesses, in person and remotely.
+
+In ${site.name.split(' ')[0]}'s words: "${site.message}"
+
+- Website: ${abs('/')}
+- Email: ${site.email}
+- Phone / WhatsApp: ${site.phone}
+${site.profiles.map((p) => `- ${p.label}: ${p.url}`).join('\n')}
+
+## Services
+${services.map((s) => `- [${s.title}](${abs(`/services/${s.slug}/`)}): ${s.summary}`).join('\n')}
+
+## Ways to work together
+${engagements.map((e) => `- ${e.name} (${e.length}): ${e.summary}`).join('\n')}
+
+## Insights
+${posts.map((p) => `- [${p.title}](${abs(`/insights/${p.slug}/`)}): ${p.description}`).join('\n')}
+
+## Pages
+- [About](${abs('/about/')})
+- [Contact](${abs('/contact/')})
+- [Privacy](${abs('/privacy/')})
+`.replace(/\n{3,}/g, '\n\n'));
 
 writeFileSync(join(out, 'site.webmanifest'), JSON.stringify({ name: site.name, short_name: 'PM', start_url: '/', display: 'browser', background_color: '#f5f2ea', theme_color: '#f5f2ea', icons: [{ src: '/assets/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
 

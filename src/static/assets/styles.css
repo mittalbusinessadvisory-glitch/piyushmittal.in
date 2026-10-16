@@ -173,7 +173,7 @@ p { margin: 0 0 1em; }
 .post-card p:not(.meta), .svc-card p { color: var(--muted); font-size: .96rem; }
 .post-card .link, .svc-card .link { margin-top: auto; padding-top: .6rem; }
 .meta { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: .82rem; color: var(--muted); margin: 0; }
-.tag { font: 600 .68rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: .4rem .6rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag { font: 600 .74rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: .4rem .6rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 
 
 .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
@@ -379,7 +379,8 @@ p { margin: 0 0 1em; }
 .rot-words span { grid-area: 1 / 1; opacity: 0; transform: translateY(.6em); transition: opacity .5s var(--ease), transform .5s var(--ease); white-space: nowrap; border-bottom: 1px solid currentColor; }
 .rot-words span.is-on { opacity: 1; transform: none; }
 .rot-words span.is-off { opacity: 0; transform: translateY(-.6em); }
-.diag { transition: transform .4s var(--ease); transform-style: preserve-3d; will-change: transform; }
+.diag { transition: transform .4s var(--ease); transform-style: preserve-3d; }
+.diag:hover { will-change: transform; }
 
 /* Spotlight hover */
 .svc-list a { position: relative; }
@@ -442,7 +443,7 @@ p { margin: 0 0 1em; }
 .plan.is-featured .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
 .plan.is-featured .btn:hover { background: var(--accent-soft); }
 .plan.is-featured::before { background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(156, 197, 174, .14), transparent 60%); }
-.plan-tag { align-self: flex-start; font: 600 .68rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: .45rem .65rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin: 0 0 1.2rem; }
+.plan-tag { align-self: flex-start; font: 600 .74rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; padding: .45rem .65rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin: 0 0 1.2rem; }
 .plan h3 { font-size: 2rem; margin: 0; }
 .plan-len { color: var(--muted); font-size: .88rem; margin: .3rem 0 1rem; }
 .plan > p:not(.plan-tag):not(.plan-len) { color: var(--muted); font-size: .96rem; }
@@ -482,7 +483,7 @@ p { margin: 0 0 1em; }
 .fab-wa span { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width .4s var(--ease); }
 .fab-wa:hover { transform: translateY(-3px); }
 .fab-wa:hover span, .fab-wa:focus-visible span { max-width: 160px; }
-.fab-wa::after { content: ""; position: absolute; inset: 0; border-radius: inherit; animation: pulse 2.8s infinite 3s; }
+.fab-wa::after { content: ""; position: absolute; inset: 0; border-radius: inherit; animation: pulse 2.8s 3 3s; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(31, 143, 78, .45); } 70%, 100% { box-shadow: 0 0 0 16px rgba(31, 143, 78, 0); } }
 .to-top { position: fixed; right: 27px; bottom: 88px; z-index: 40; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); display: grid; place-items: center; cursor: pointer; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .3s, transform .3s var(--ease), border-color .2s; }
 .to-top svg { width: 18px; height: 18px; }
@@ -509,4 +510,20 @@ p { margin: 0 0 1em; }
 @media (prefers-reduced-motion: reduce) {
   .fab-wa::after { animation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* Form errors & consent */
+.field-err { font-size: .82rem; color: var(--warm); }
+.field-err:empty { display: none; }
+.consent { margin: -.2rem 0 0; font-size: .82rem; color: var(--muted); }
+.consent a { color: var(--accent); }
+
+@media (max-width: 760px) {
+  /* solid header on small screens: backdrop blur is costly on low-end phones */
+  .site-header { background: var(--paper); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  /* compact WhatsApp button so it never covers content */
+  .fab-wa { width: 48px; height: 48px; padding: 0; justify-content: center; right: 12px; bottom: 12px; }
+  .fab-wa span { display: none; }
+  .to-top { right: 16px; bottom: 70px; }
+  .site-footer { padding-bottom: 5rem; }
 }

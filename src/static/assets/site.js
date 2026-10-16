@@ -2,6 +2,11 @@
   const doc = document.documentElement;
   doc.classList.add('js');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const live = document.createElement('p');
+  live.className = 'sr';
+  live.setAttribute('aria-live', 'polite');
+  document.body.append(live);
+  const announce = (msg) => { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 50); };
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -16,7 +21,7 @@
     const y = window.scrollY;
     header.classList.toggle('scrolled', y > 8);
     // hide header when scrolling down, show when scrolling up
-    if (!doc.classList.contains('nav-open')) header.classList.toggle('hidden', y > 320 && y > lastY + 4);
+    if (!doc.classList.contains('nav-open') && !header.contains(document.activeElement)) header.classList.toggle('hidden', y > 320 && y > lastY + 4);
     if (y < lastY - 4) header.classList.remove('hidden');
     lastY = y;
     const max = doc.scrollHeight - window.innerHeight;
@@ -26,14 +31,30 @@
   };
   window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
+  header.addEventListener('focusin', () => header.classList.remove('hidden'));
   toTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }));
 
   /* ---------- Mobile nav ---------- */
   const toggle = $('.nav-toggle');
-  const closeNav = () => { doc.classList.remove('nav-open'); toggle?.setAttribute('aria-expanded', 'false'); };
+  const nav = $('#site-nav');
+  const setInert = (on) => ['main', '.site-footer', '.fab-wa', '.to-top'].forEach((s) => { const el = $(s); if (el) el.inert = on; });
+  const closeNav = () => { doc.classList.remove('nav-open'); toggle?.setAttribute('aria-expanded', 'false'); setInert(false); };
   toggle?.addEventListener('click', () => {
     const open = doc.classList.toggle('nav-open');
     toggle.setAttribute('aria-expanded', String(open));
+    setInert(open);
+    if (open) $('a', nav)?.focus();
+  });
+  nav?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !doc.classList.contains('nav-open')) return;
+    const links = [toggle, ...$('a', nav)];
+    const first = links[0];
+    const last = links[links.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  toggle?.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' && e.shiftKey && doc.classList.contains('nav-open')) { e.preventDefault(); $('a', nav).pop()?.focus(); }
   });
   $$('.site-nav a').forEach((a) => a.addEventListener('click', closeNav));
   document.addEventListener('keydown', (e) => {
@@ -69,9 +90,15 @@
   /* ---------- Hero word rotator ---------- */
   const rot = $('.rot-words');
   if (rot && !reduce) {
-    const words = $$('span', rot);
+    const words = $('span', rot);
     let i = 0;
-    setInterval(() => {
+    let steps = 0;
+    let paused = false;
+    rot.closest('.rotator').addEventListener('pointerenter', () => { paused = true; });
+    rot.closest('.rotator').addEventListener('pointerleave', () => { paused = false; });
+    const timer = setInterval(() => {
+      if (paused) return;
+      if (++steps > words.length) { clearInterval(timer); return; } // one full cycle, ends on the first phrase
       words[i].classList.remove('is-on');
       words[i].classList.add('is-off');
       const prev = words[i];
@@ -119,7 +146,7 @@
       const pct = Math.round((idx / questions.length) * 100);
       hc.innerHTML = `
         <div class="hc-top"><span>Question ${idx + 1} of ${questions.length}</span><span class="hc-meter"><i style="width:${pct}%"></i></span></div>
-        <p class="hc-q">${questions[idx].q}</p>
+        <p class="hc-q" tabindex="-1">${questions[idx].q}</p>
         <div class="hc-actions">
           <button type="button" class="hc-btn" data-a="1">Yes, that's us</button>
           <button type="button" class="hc-btn" data-a="0">Not really</button>
@@ -132,6 +159,8 @@
         idx < questions.length ? renderQ() : renderResult();
       }));
       $('.hc-back', hc)?.addEventListener('click', () => { idx -= 1; renderQ(); });
+      $('.hc-q', hc).focus({ preventScroll: true });
+      announce(`Question ${idx + 1} of ${questions.length}`);
     };
 
     const renderResult = () => {
@@ -149,7 +178,7 @@
           </div>
           <div>
             <p class="eyebrow">Your growth score</p>
-            <h3>${title}</h3>
+            <h3 tabindex="-1">${title}</h3>
             <p>${text}</p>
             ${top.length ? `<p class="hc-fix">Fix these first:</p><ul class="hc-list">${top.map((t) => `<li><a href="${t.u}">${t.t} →</a></li>`).join('')}</ul>` : '<p class="hc-fix">No obvious leaks — let\'s talk about scaling what works.</p>'}
             <div class="hc-actions">
@@ -168,6 +197,8 @@
         requestAnimationFrame(step);
       }
       $('.hc-restart', hc).addEventListener('click', () => { idx = 0; answers.fill(null); renderQ(); });
+      $('h3', hc).focus({ preventScroll: true });
+      announce(`Your growth score is ${score} out of 100: ${title}`);
     };
 
     hc.innerHTML = `
@@ -197,7 +228,7 @@
 
   /* ---------- Copy link ---------- */
   $$('[data-copy]').forEach((btn) => btn.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(btn.dataset.copy); btn.textContent = 'Link copied ✓'; }
+    try { await navigator.clipboard.writeText(btn.dataset.copy); btn.textContent = 'Link copied ✓'; announce('Link copied'); }
     catch { btn.textContent = btn.dataset.copy; }
     setTimeout(() => { btn.textContent = 'Copy link'; }, 2200);
   }));
@@ -218,20 +249,24 @@
     if (score && !form.message.value) form.message.value = `My health check score was ${score}/100. `;
 
     const mailFallback = (data) => {
-      const body = `${data.message}\n\n— ${data.name}\n${data.email}${data.company ? `\n${data.company}` : ''}`;
+      const body = `${data.message}\n\n— ${data.name}\n${data.email}${data.phone ? `\n${data.phone}` : ''}${data.company ? `\n${data.company}` : ''}`;
       window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(`Enquiry: ${data.topic}`)}&body=${encodeURIComponent(body)}`;
       status.className = 'form-status ok'; status.textContent = 'Opening your email app…';
     };
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      let valid = true;
+      let firstBad = null;
       $$('[required]', form).forEach((f) => {
-        const ok = f.value.trim() && (f.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value));
-        f.setAttribute('aria-invalid', ok ? 'false' : 'true');
-        if (!ok) valid = false;
+        const empty = !f.value.trim();
+        const badEmail = f.type === 'email' && !empty && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value);
+        const msg = empty ? `Please enter ${f.dataset.label || 'this field'}.` : badEmail ? 'Please enter a valid email, like name@business.com.' : '';
+        const err = $(`#${f.id}-err`, form);
+        f.setAttribute('aria-invalid', msg ? 'true' : 'false');
+        if (err) err.textContent = msg;
+        if (msg && !firstBad) firstBad = f;
       });
-      if (!valid) { status.className = 'form-status err'; status.textContent = 'Please fill in your name, a valid email and a short message.'; return; }
+      if (firstBad) { status.className = 'form-status err'; status.textContent = 'Please fix the highlighted fields.'; firstBad.focus(); return; }
       if (form._gotcha.value) return;
       const fd = new FormData(form);
       const data = Object.fromEntries(fd);

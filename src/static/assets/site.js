@@ -109,6 +109,15 @@
     }, 2600);
   }
 
+  /* ---------- Skills ticker: pause/play (WCAG 2.2.2) ---------- */
+  const ticker = $('.ticker');
+  ticker?.querySelector('.ticker-toggle')?.addEventListener('click', (e) => {
+    const paused = ticker.classList.toggle('paused');
+    e.currentTarget.setAttribute('aria-pressed', String(paused));
+    e.currentTarget.setAttribute('aria-label', paused ? 'Play scrolling text' : 'Pause scrolling text');
+    e.currentTarget.firstElementChild.textContent = paused ? '▶' : '❚❚';
+  });
+
   /* ---------- Pointer effects (desktop only) ---------- */
   if (finePointer && !reduce) {
     // spotlight that follows the cursor on the dark service list

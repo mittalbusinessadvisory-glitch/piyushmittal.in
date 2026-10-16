@@ -233,13 +233,24 @@ const savingsCalc = `
 
 /* ---------------- Home ---------------- */
 const problems = [
-  ['Leads arrive, but follow-up is slow or forgotten', 'online-presence-lead-generation'],
-  ['The website looks fine but rarely produces enquiries', 'website-development'],
-  ['Your team loses hours to copy-paste and reporting', 'ai-implementation-workflow-automation'],
-  ['Competitors show up on Google and you don\'t', 'digital-marketing-seo'],
-  ['Growth has stalled and the next move isn\'t obvious', 'business-consulting-growth-strategy'],
-  ['Everything still runs through the owner', 'business-weakness-analysis-process-improvement'],
+  ['Leads arrive, but follow-up is slow or forgotten', 'online-presence-lead-generation', 'Fixable. Let\'s make sure no lead goes cold.'],
+  ['The website looks fine but rarely produces enquiries', 'website-development', 'Fixable. Let\'s make it actually sell.'],
+  ['Your team loses hours to copy-paste and reporting', 'ai-implementation-workflow-automation', 'Fixable. Let AI do the boring bits.'],
+  ['Competitors show up on Google and you don\'t', 'digital-marketing-seo', 'Fixable. Let\'s get you found.'],
+  ['Growth has stalled and the next move isn\'t obvious', 'business-consulting-growth-strategy', 'Fixable. Let\'s find the next move.'],
+  ['Everything still runs through the owner', 'business-weakness-analysis-process-improvement', 'Fixable. Let\'s free up your calendar.'],
 ];
+// bento layout for the homepage services: [slug, size, tone]
+const bento = [
+  ['business-consulting-growth-strategy', 'xl', 'img'],
+  ['ai-implementation-workflow-automation', 'wide', 'zap'],
+  ['website-development', 'sq', 'lime'],
+  ['digital-marketing-seo', 'sq', 'paper'],
+  ['online-presence-lead-generation', 'wide', 'img'],
+  ['market-research-competitor-analysis', 'sq', 'ink'],
+  ['business-weakness-analysis-process-improvement', 'sq', 'coral'],
+];
+const tickerItems = ['Growth strategy', 'AI automation', 'Websites that sell', 'SEO & Google visibility', 'WhatsApp lead flows', 'Market research', 'Process fixes', '90-day plans', 'No jargon', 'Business first'];
 
 emit('/', layout({
   path: '/',
@@ -251,8 +262,8 @@ emit('/', layout({
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow" data-reveal>${esc(site.tagline)}</p>
-      <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)}.</span> I find what's holding your business back — and build <em>the fix</em>.</h1>
+      <p class="status-pill" data-reveal><span class="live-dot" aria-hidden="true"></span>${esc(site.tagline)} · replies within 24h</p>
+      <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)} 👋</span> I find what's holding your business back and build <em class="hl">the fix</em>.</h1>
       <p class="lede" data-reveal>${esc(site.message)} I work with small businesses on strategy, websites, marketing and AI automation — whatever the problem actually needs.</p>
       <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>more customers from Google</span><span>a business that runs without you</span></span></p>
       <div class="hero-actions" data-reveal>
@@ -260,6 +271,10 @@ emit('/', layout({
         <a class="btn btn-ghost" href="#health-check">Take the 2-minute health check</a>
       </div>
     </div>
+    <div class="diag-wrap">
+    <span class="sticker sticker-1" aria-hidden="true">AI-powered ⚡</span>
+    <span class="sticker sticker-2" aria-hidden="true">No jargon</span>
+    <span class="sticker sticker-3" aria-hidden="true">Fixed price ✓</span>
     <aside class="diag" data-reveal aria-label="Example of a business growth diagnostic">
       <div class="diag-head"><span>Growth diagnostic</span><span class="diag-tag">Example</span></div>
       <ul class="diag-list">
@@ -271,7 +286,13 @@ emit('/', layout({
       </ul>
       <div class="diag-foot"><span>Biggest lever</span><strong>Automate first response → reply in minutes, not days</strong></div>
     </aside>
+    </div>
   </div>
+</section>
+
+<section class="ticker" aria-label="What I work on">
+  <div class="ticker-track">${[0, 1].map((n) => `<ul class="ticker-list"${n ? ' aria-hidden="true"' : ''}>${tickerItems.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`).join('')}</div>
+  <button class="ticker-toggle" type="button" aria-pressed="false" aria-label="Pause scrolling text"><span aria-hidden="true">❚❚</span></button>
 </section>
 
 <section class="strip" aria-label="How I work">
@@ -288,9 +309,14 @@ emit('/', layout({
       <p class="eyebrow">Sound familiar?</p>
       <h2>The problems I'm usually called in to solve</h2>
     </header>
-    <ol class="problems">
-      ${problems.map(([p, s], i) => `<li data-reveal><a href="/services/${s}/"><span class="num">${pad(i + 1)}</span><span class="p">${esc(p)}</span><span class="s">${esc(svc(s).short)} ${ARROW}</span></a></li>`).join('')}
-    </ol>
+    <ul class="chats">
+      ${problems.map(([p, s, reply]) => `<li class="chat" data-reveal><a href="/services/${s}/">
+        <span class="chat-head"><span class="chat-avatar" aria-hidden="true">BO</span><span><b>Business owner</b><small>online</small></span></span>
+        <span class="msg msg-in">${esc(p)}</span>
+        <span class="typing" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="msg msg-out">${esc(reply)} <u>${esc(svc(s).short)} ${ARROW}</u></span>
+      </a></li>`).join('')}
+    </ul>
   </div>
 </section>
 
@@ -313,8 +339,12 @@ emit('/', layout({
       <div><p class="eyebrow">Services</p><h2>Seven ways I help businesses grow</h2></div>
       <p>Each service stands on its own, but they work best together: understand the business, find the opportunity, then build the solution.</p>
     </header>
-    <ul class="svc-list">
-      ${services.map((s, i) => `<li data-reveal><a href="/services/${s.slug}/"><span class="num">${pad(i + 1)}</span><span class="t">${esc(s.title)}</span><span class="d">${esc(s.summary)}</span>${ARROW}</a></li>`).join('')}
+    <ul class="bento">
+      ${bento.map(([slug, size, tone]) => { const s = svc(slug); return `<li class="tile tile-${size} tone-${tone}" data-reveal><a href="/services/${s.slug}/">
+        ${tone === 'img' && s.image ? pic(s.image, { cls: 'tile-img' }) : ''}
+        <span class="tile-body"><span class="tile-tag">${esc(s.short)}</span><span class="tile-title">${esc(s.title)}</span><span class="tile-sum">${esc(s.summary)}</span></span>
+        <span class="tile-go" aria-hidden="true">${ARROW}</span>
+      </a></li>`; }).join('')}
     </ul>
   </div>
 </section>

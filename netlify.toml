@@ -1,0 +1,26 @@
+[build]
+  command = "node src/build.mjs"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# One canonical address: send the bare domain and the Netlify subdomain to https://www.piyushmittal.in
+[[redirects]]
+  from = "https://piyushmittal.in/*"
+  to = "https://www.piyushmittal.in/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

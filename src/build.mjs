@@ -35,10 +35,11 @@ const SIZES = {
   'cover-img': '(max-width: 780px) calc(100vw - 32px), 740px',
 };
 const variants = (src, ext, widths) => widths.map((w) => `${src.replace('.jpg', `-${w}.${ext}`)} ${w}w`).join(', ');
-const pic = (im, { cls = '', eager = false } = {}) => {
+// vt: view-transition-name shared by a card image and its page's hero, so the image morphs between pages
+const pic = (im, { cls = '', eager = false, vt = '' } = {}) => {
   const widths = [480, 800, 1200].filter((w) => w <= im.w);
   const sizes = SIZES[cls] || '100vw';
-  return `<picture${cls ? ` class="${cls}"` : ''}>`
+  return `<picture${cls ? ` class="${cls}"` : ''}${vt ? ` style="view-transition-name: vt-${vt}"` : ''}>`
     + `<source type="image/avif" srcset="${variants(im.src, 'avif', widths)}" sizes="${sizes}">`
     + `<source type="image/webp" srcset="${variants(im.src, 'webp', widths)}" sizes="${sizes}">`
     + `<img src="${im.src.replace('.jpg', '-800.jpg')}" srcset="${variants(im.src, 'jpg', widths)}" sizes="${sizes}" alt="${esc(im.alt)}" width="${im.w}" height="${im.h}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
@@ -195,7 +196,7 @@ const ctaBand = (heading = 'Have a problem worth solving?', text = 'Tell me what
 const postCard = (p) => `
 <article class="post-card" data-reveal>
   <a href="/insights/${p.slug}/">
-    ${p.image ? pic(p.image, { cls: 'card-img' }) : ''}
+    ${p.image ? pic(p.image, { cls: 'card-img', vt: `post-${p.slug}` }) : ''}
     <p class="meta"><span class="tag">${esc(p.tag)}</span><time datetime="${p.date}">${fmtDate(p.date)}</time></p>
     <h3>${esc(p.title)}</h3>
     <p>${esc(p.description)}</p>
@@ -409,7 +410,7 @@ emit('/services/', layout({
 <section class="section pt0">
   <div class="wrap">
     <div class="svc-grid">
-      ${services.map((s, i) => `<article class="svc-card" data-reveal><a href="/services/${s.slug}/">${s.image ? pic(s.image, { cls: 'card-img' }) : ''}<span class="num">${pad(i + 1)}</span><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><ul>${s.deliverables.slice(0, 3).map((d) => `<li>${esc(d)}</li>`).join('')}</ul><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}
+      ${services.map((s, i) => `<article class="svc-card" data-reveal><a href="/services/${s.slug}/">${s.image ? pic(s.image, { cls: 'card-img', vt: `svc-${s.slug}` }) : ''}<span class="num">${pad(i + 1)}</span><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><ul>${s.deliverables.slice(0, 3).map((d) => `<li>${esc(d)}</li>`).join('')}</ul><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}
     </div>
   </div>
 </section>
@@ -441,7 +442,7 @@ services.forEach((s, idx) => {
       <p class="lede" data-reveal>${esc(s.intro)}</p>
       <div class="hero-actions" data-reveal><a class="btn" href="${ctaHref}"${ctaAttrs}>Discuss your project ${ARROW}</a></div>
     </div>
-    ${s.image ? pic(s.image, { cls: 'media-img', eager: true }) : ''}
+    ${s.image ? pic(s.image, { cls: 'media-img', eager: true, vt: `svc-${s.slug}` }) : ''}
   </div>
 </section>
 <section class="section pt0">
@@ -478,7 +479,7 @@ ${s.slug === 'ai-implementation-workflow-automation' ? savingsCalc : ''}
 <section class="section">
   <div class="wrap">
     <header class="section-head" data-reveal><p class="eyebrow">Often paired with</p><h2>Related services</h2></header>
-    <div class="card-grid">${s.related.map((r) => svc(r)).map((r) => `<article class="svc-card" data-reveal><a href="/services/${r.slug}/">${r.image ? pic(r.image, { cls: 'card-img' }) : ''}<h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}</div>
+    <div class="card-grid">${s.related.map((r) => svc(r)).map((r) => `<article class="svc-card" data-reveal><a href="/services/${r.slug}/">${r.image ? pic(r.image, { cls: 'card-img', vt: `svc-${r.slug}` }) : ''}<h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}</div>
   </div>
 </section>
 ${ctaBand(`Ready to start on ${esc(s.short)}?`, `Tell me where your business is today. On a free 30-minute call I will show you where ${esc(s.short)} could make the biggest difference in the next 90 days, and what it would take.`, `/contact/?topic=${encodeURIComponent(s.title)}`, 'Discuss your project')}`,
@@ -588,7 +589,7 @@ posts.forEach((p) => {
       <p class="byline" data-reveal>${avatar()}By <a href="/about/" rel="author">${esc(site.name)}</a></p>
     </div>
   </header>
-  ${p.image ? `<div class="wrap narrow">${pic(p.image, { cls: 'cover-img', eager: true })}</div>` : ''}
+  ${p.image ? `<div class="wrap narrow">${pic(p.image, { cls: 'cover-img', eager: true, vt: `post-${p.slug}` })}</div>` : ''}
   <div class="wrap narrow prose article-body">${p.body}</div>
   <div class="wrap narrow share" data-share>
     <span>Share this article</span>

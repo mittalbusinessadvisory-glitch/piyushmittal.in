@@ -14,6 +14,7 @@
   /* ---------- Header, progress bar, back-to-top ---------- */
   const header = $('.site-header');
   const bar = $('.progress span');
+  const cssProgress = window.CSS?.supports?.('animation-timeline: scroll()'); // CSS drives the bar where supported
   const toTop = $('.to-top');
   let lastY = window.scrollY;
   let ticking = false;
@@ -25,7 +26,7 @@
     if (y < lastY - 4) header.classList.remove('hidden');
     lastY = y;
     const max = doc.scrollHeight - window.innerHeight;
-    if (bar) bar.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
+    if (bar && !cssProgress) bar.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
     toTop?.classList.toggle('show', y > 900);
     ticking = false;
   };
@@ -47,14 +48,14 @@
   });
   nav?.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab' || !doc.classList.contains('nav-open')) return;
-    const links = [toggle, ...$('a', nav)];
+    const links = [toggle, ...$$('a', nav)];
     const first = links[0];
     const last = links[links.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
   toggle?.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab' && e.shiftKey && doc.classList.contains('nav-open')) { e.preventDefault(); $('a', nav).pop()?.focus(); }
+    if (e.key === 'Tab' && e.shiftKey && doc.classList.contains('nav-open')) { e.preventDefault(); $$('a', nav).pop()?.focus(); }
   });
   $$('.site-nav a').forEach((a) => a.addEventListener('click', closeNav));
   document.addEventListener('keydown', (e) => {
@@ -90,7 +91,7 @@
   /* ---------- Hero word rotator ---------- */
   const rot = $('.rot-words');
   if (rot && !reduce) {
-    const words = $('span', rot);
+    const words = $$('span', rot);
     let i = 0;
     let steps = 0;
     let paused = false;

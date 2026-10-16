@@ -545,3 +545,31 @@ p { margin: 0 0 1em; }
   a { color: #000; }
   .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
 }
+
+/* ===================== Motion upgrade ===================== */
+
+/* Shared image morph: card image <-> page hero (named via view-transition-name) */
+::view-transition-group(*) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2, .7, .2, 1); }
+::view-transition-old(*), ::view-transition-new(*) { height: 100%; object-fit: cover; }
+::view-transition-group(site-header) { animation-duration: 0s; }
+
+/* Reading progress driven by scroll position, no JavaScript (Chromium, Safari 18+) */
+@supports (animation-timeline: scroll()) {
+  .progress span { transform: scaleX(0); animation: progress-grow linear both; animation-timeline: scroll(root block); }
+  @keyframes progress-grow { to { transform: scaleX(1); } }
+}
+
+/* Smoothly opening FAQ accordions (supported browsers; others open instantly) */
+:root { interpolate-size: allow-keywords; }
+.faqs details::details-content { height: 0; overflow: clip; transition: height .35s cubic-bezier(.2, .7, .2, 1), content-visibility .35s allow-discrete; }
+.faqs details[open]::details-content { height: auto; }
+.faqs details p { opacity: 0; transform: translateY(-4px); transition: opacity .3s .05s, transform .3s .05s; }
+.faqs details[open] p { opacity: 1; transform: none; }
+.faqs summary { transition: color .2s; }
+.faqs summary:hover { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  .faqs details::details-content { transition: none; }
+  .faqs details p { opacity: 1; transform: none; transition: none; }
+}

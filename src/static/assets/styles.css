@@ -527,3 +527,21 @@ p { margin: 0 0 1em; }
   .to-top { right: 16px; bottom: 70px; }
   .site-footer { padding-bottom: 5rem; }
 }
+
+/* Article "how I can help" box and 404 links */
+.help-box { padding-block: 0 2rem; }
+.help-box ul, .lost-links { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: 10px; }
+.lost-links { margin-top: 1.6rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.help-box a, .lost-links a { display: grid; gap: .25rem; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: 12px; background: var(--card); text-decoration: none; color: var(--ink); transition: border-color .2s, transform .2s; }
+.help-box a:hover, .lost-links a:hover { border-color: var(--ink); transform: translateY(-2px); }
+.help-box span, .lost-links span { color: var(--muted); font-size: .9rem; }
+@media (max-width: 560px) { .lost-links { grid-template-columns: 1fr; } }
+
+/* Print: articles and pages read cleanly on paper */
+@media print {
+  .site-header, .site-footer, .cta-band, .fab-wa, .to-top, .progress, .share, .help-box, .hero-actions, .crumbs { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .js [data-reveal] { opacity: 1 !important; transform: none !important; }
+  a { color: #000; }
+  .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
+}

@@ -279,6 +279,7 @@ export const services = [
 export const posts = [
   {
     slug: 'where-small-businesses-should-start-with-ai',
+    related: ['ai-implementation-workflow-automation', 'business-weakness-analysis-process-improvement'],
     image: img.aiHand,
     title: 'Where small businesses should actually start with AI',
     description: 'Skip the hype. A practical way for small business owners to find the first AI use case that pays for itself.',
@@ -316,6 +317,7 @@ export const posts = [
   },
   {
     slug: 'five-leaks-that-quietly-kill-small-business-growth',
+    related: ['business-weakness-analysis-process-improvement', 'business-consulting-growth-strategy'],
     image: img.smallBiz,
     title: 'The five leaks that quietly kill small business growth',
     description: 'Revenue rarely stalls for one big reason. It leaks through small, fixable gaps. Here are the five most common — and how to spot them.',
@@ -340,6 +342,7 @@ export const posts = [
   },
   {
     slug: 'why-your-website-is-not-generating-leads',
+    related: ['website-development', 'online-presence-lead-generation'],
     image: img.webLeads,
     title: 'Why your website isn\'t generating leads (and what to fix first)',
     description: 'Traffic without enquiries is a clarity problem, not a design problem. A priority-ordered checklist for small business websites.',

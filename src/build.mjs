@@ -144,7 +144,7 @@ ${body}
 <footer class="site-footer">
   <div class="wrap">
     <div class="footer-cta">
-      <p class="footer-statement">${esc(site.message)}</p>
+      <p class="footer-statement">Every growing business has a next bottleneck. Let's find yours and fix it.</p>
       <a class="btn btn-light" href="${ctaHref}"${ctaAttrs}>Start a conversation ${ARROW}</a>
     </div>
     <div class="footer-grid">
@@ -184,11 +184,11 @@ function emit(path, html, { priority = '0.7', lastmod = siteUpdated, sitemap = t
 const crumbs = (trail) =>
   `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a>${trail.map(([l, h], i) => (i === trail.length - 1 ? `<span aria-current="page">${esc(l)}</span>` : `<a href="${h}">${esc(l)}</a>`)).join('')}</nav>`;
 
-const ctaBand = (heading = 'Have a problem worth solving?', text = 'Tell me what is slowing your business down. You\'ll get an honest view of what I\'d look at first — even if we don\'t end up working together.') => `
+const ctaBand = (heading = 'Have a problem worth solving?', text = 'Tell me what is slowing your business down. You\'ll get an honest view of what I\'d look at first — even if we don\'t end up working together.', href = ctaHref, label = 'Book a free 30-minute call') => `
 <section class="cta-band" data-reveal>
   <div class="wrap cta-inner">
     <h2>${heading}</h2>
-    <div><p>${text}</p><a class="btn" href="${ctaHref}"${ctaAttrs}>Book a free 30-minute call ${ARROW}</a></div>
+    <div><p>${text}</p><a class="btn" href="${href}"${href === site.calendarUrl ? ctaAttrs : ''}>${label} ${ARROW}</a></div>
   </div>
 </section>`;
 
@@ -253,7 +253,7 @@ emit('/', layout({
       <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>more customers from Google</span><span>a business that runs without you</span></span></p>
       <div class="hero-actions" data-reveal>
         <a class="btn" href="${ctaHref}"${ctaAttrs}>Book a free strategy call ${ARROW}</a>
-        <a class="btn btn-ghost" href="/services/">See how I help</a>
+        <a class="btn btn-ghost" href="#health-check">Take the 2-minute health check</a>
       </div>
     </div>
     <aside class="diag" data-reveal aria-label="Example of a business growth diagnostic">
@@ -481,7 +481,7 @@ ${s.slug === 'ai-implementation-workflow-automation' ? savingsCalc : ''}
     <div class="card-grid">${s.related.map((r) => svc(r)).map((r) => `<article class="svc-card" data-reveal><a href="/services/${r.slug}/">${r.image ? pic(r.image, { cls: 'card-img' }) : ''}<h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}</div>
   </div>
 </section>
-${ctaBand()}`,
+${ctaBand(`Ready to start on ${esc(s.short)}?`, `Tell me where your business is today. On a free 30-minute call I will show you where ${esc(s.short)} could make the biggest difference in the next 90 days, and what it would take.`, `/contact/?topic=${encodeURIComponent(s.title)}`, 'Discuss your project')}`,
   }), { priority: '0.8' });
 });
 
@@ -597,6 +597,7 @@ posts.forEach((p) => {
     <a href="https://x.com/intent/post?text=${encodeURIComponent(p.title)}&amp;url=${encodeURIComponent(abs(path))}" target="_blank" rel="noopener">X</a>
     <button type="button" data-copy="${abs(path)}">Copy link</button>
   </div>
+  ${p.related ? `<aside class="wrap narrow help-box"><p class="footer-h">Want help putting this into practice?</p><ul>${p.related.map((slug) => svc(slug)).map((r) => `<li><a href="/services/${r.slug}/"><b>${esc(r.title)}</b><span>${esc(r.summary)}</span></a></li>`).join('')}</ul></aside>` : ''}
   <aside class="wrap narrow author-box">
     ${avatar('avatar lg')}
     <div><p class="footer-h">About the author</p><p><strong>${esc(site.name)}</strong> is a business growth and AI solutions consultant helping small businesses find what's holding them back and fix it. <a href="/about/">More about Piyush</a>.</p></div>
@@ -605,7 +606,7 @@ posts.forEach((p) => {
 <section class="section section-tint">
   <div class="wrap"><header class="section-head" data-reveal><p class="eyebrow">Keep reading</p><h2>More insights</h2></header><div class="card-grid">${others.map(postCard).join('')}</div></div>
 </section>
-${ctaBand()}`,
+${ctaBand('Want this working in your business?', 'Reading is the easy part. On a free 30-minute call we can pick the one change from this article that would make the biggest difference for you.')}`,
   }), { priority: '0.7', lastmod: p.date });
 });
 
@@ -691,7 +692,7 @@ emit('/contact/thanks/', layout({
   path: '/contact/thanks/', noindex: true,
   title: `Thank you | ${site.name}`,
   description: 'Your message has been received.',
-  body: `<section class="page-hero"><div class="wrap narrow"><p class="eyebrow">Message sent</p><h1>Thank you — <em>I'll be in touch</em> within one working day.</h1><p class="lede">Want a faster answer? <a href="${waHref}" target="_blank" rel="noopener">Message me on WhatsApp</a>. Meanwhile, you might like the <a href="/#health-check">business health check</a> or the latest <a href="/insights/">insights</a>.</p></div></section>`,
+  body: `<section class="page-hero"><div class="wrap narrow"><p class="eyebrow">Message sent</p><h1>Thank you — <em>I'll be in touch</em> within one working day.</h1><p class="lede">Want a faster answer? <a href="${waHref}" target="_blank" rel="noopener">Message me on WhatsApp</a>. Meanwhile, you might like the <a href="/#health-check">business health check</a> or the latest <a href="/insights/">insights</a>.</p><div class="hero-actions"><a class="btn" href="${waHref}" target="_blank" rel="noopener">Message on WhatsApp ${ARROW}</a>${site.profiles.find((p) => p.label === 'LinkedIn') ? `<a class="btn btn-ghost" href="${site.profiles.find((p) => p.label === 'LinkedIn').url}" target="_blank" rel="noopener">Follow on LinkedIn</a>` : '<a class="btn btn-ghost" href="/insights/">Read the insights</a>'}</div></div></section>`,
 }), { sitemap: false });
 
 /* ---------------- 404, sitemap, robots, feed, manifest ---------------- */
@@ -699,7 +700,8 @@ emit('/404.html', layout({
   path: '/404.html', noindex: true,
   title: `Page not found | ${site.name}`,
   description: 'This page could not be found.',
-  body: `<section class="page-hero"><div class="wrap narrow"><p class="eyebrow">404</p><h1>This page has <em>moved or never existed</em>.</h1><p class="lede">Try the <a href="/">homepage</a>, browse <a href="/services/">services</a>, or <a href="/contact/">get in touch</a>.</p></div></section>`,
+  body: `<section class="page-hero"><div class="wrap narrow"><p class="eyebrow">404</p><h1>This page has <em>moved or never existed</em>.</h1><p class="lede">The link may be old, or the page may have been removed. These are the most useful places to go next:</p>
+<ul class="lost-links"><li><a href="/#health-check"><b>Business health check</b><span>Score your business in 2 minutes</span></a></li><li><a href="/services/"><b>Services</b><span>Seven ways I help businesses grow</span></a></li><li><a href="/insights/"><b>Insights</b><span>Practical articles on growth and AI</span></a></li><li><a href="/contact/"><b>Contact</b><span>Ask me directly</span></a></li></ul></div></section>`,
 }), { sitemap: false });
 
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>

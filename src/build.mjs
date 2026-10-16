@@ -263,7 +263,7 @@ emit('/', layout({
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="status-pill" data-reveal><span class="live-dot" aria-hidden="true"></span>${esc(site.tagline)} · replies within 24h</p>
+      <p class="status-pill" data-reveal><span class="live-dot" aria-hidden="true"></span>${esc(site.tagline)}<span class="pill-extra"> · replies within 24h</span></p>
       <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)} 👋</span> I find what's holding your business back and build <em class="hl">the fix</em>.</h1>
       <p class="lede" data-reveal>${esc(site.message)} I work with small businesses on strategy, websites, marketing and AI automation — whatever the problem actually needs.</p>
       <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>more customers from Google</span><span>a business that runs without you</span></span></p>

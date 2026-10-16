@@ -10,19 +10,19 @@
   };
 
   const FACTS = [
-    { k: 'Biz fact', t: 'Reply to a new lead within 5 minutes and you are far more likely to reach them than if you wait 30 minutes.', s: 'Lead Response Management Study, MIT & InsideSales' },
-    { k: 'Biz fact', t: 'Winning a new customer can cost 5 to 25 times more than keeping one you already have.', s: 'Harvard Business Review, 2014' },
-    { k: 'Biz fact', t: 'A 5% rise in customer retention can lift profits by 25% to 95%.', s: 'Bain & Company' },
-    { k: 'Biz fact', t: '53% of mobile visitors leave a site that takes longer than 3 seconds to load.', s: 'Google, 2016' },
-    { k: 'Biz fact', t: 'Fewer than 1 in 100 Google searchers click a result on page two.', s: 'Backlinko, 2023' },
-    { k: 'Biz fact', t: 'Visitors form a first impression of your website in about 50 milliseconds.', s: 'Lindgaard et al., 2006' },
-    { k: 'Biz fact', t: 'About 3 in 4 people judge a company’s credibility by its website design.', s: 'Stanford Web Credibility Research' },
-    { k: 'Pro tip', t: 'An unanswered WhatsApp message is a customer asking your competitor next.' },
-    { k: 'Pro tip', t: 'Prices you haven’t reviewed in years quietly shrink your margin as costs rise.' },
-    { k: 'Pro tip', t: 'Every hour spent copy-pasting data is an hour not spent selling. Automate the boring bits first.' },
-    { k: 'Pro tip', t: 'If your business can’t run for a week without you, the owner is the bottleneck.' },
-    { k: 'Pro tip', t: 'More leads into a leaky follow-up process mostly produce more lost leads. Fix the leak first.' },
-    { k: 'Pro tip', t: 'Not sure where you are leaking money? The 2-minute health check on the homepage tells you.', href: '/#health-check' },
+    { k: 'Biz fact', t: 'Reply to a lead in 5 minutes, not 30. You’re far likelier to reach them.', s: 'MIT & InsideSales' },
+    { k: 'Biz fact', t: 'A new customer costs 5–25× more than keeping one.', s: 'Harvard Business Review' },
+    { k: 'Biz fact', t: '+5% customer retention can mean +25–95% profit.', s: 'Bain & Company' },
+    { k: 'Biz fact', t: '53% of mobile visitors leave if a page takes 3s+.', s: 'Google' },
+    { k: 'Biz fact', t: 'Under 1% of searchers click Google’s page two.', s: 'Backlinko' },
+    { k: 'Biz fact', t: 'Visitors judge your website in about 50 milliseconds.', s: 'Lindgaard et al.' },
+    { k: 'Biz fact', t: '3 in 4 people judge your credibility by your website.', s: 'Stanford' },
+    { k: 'Pro tip', t: 'Unanswered WhatsApp = customer asking your competitor.' },
+    { k: 'Pro tip', t: 'Old prices + rising costs = shrinking margin.' },
+    { k: 'Pro tip', t: 'Still copy-pasting data? Automate that first.' },
+    { k: 'Pro tip', t: 'Can’t take a week off? You’re the bottleneck.' },
+    { k: 'Pro tip', t: 'Fix follow-up before buying more leads.' },
+    { k: 'Pro tip', t: 'Find your money leaks in 2 minutes.', href: '/#health-check' },
   ];
 
   /* ---------- build the bot ---------- */
@@ -31,7 +31,7 @@
   bot.innerHTML = `
     <div class="bot-bubble" role="status" aria-live="polite">
       <b class="bot-kind"></b><p class="bot-text"></p><small class="bot-src"></small>
-      <span class="bot-actions"><button type="button" class="bot-next">Next fact</button><button type="button" class="bot-hide">Hide bot</button></span>
+      <span class="bot-actions"><button type="button" class="bot-next">Next</button><button type="button" class="bot-hide">Hide bot</button></span>
     </div>
     <button type="button" class="bot-body" aria-label="Biz Bot: show a business fact">
       <svg viewBox="0 0 80 84" aria-hidden="true" focusable="false">
@@ -99,26 +99,28 @@
     bot.dataset.edge = edge;
     bot.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
   };
-  const roam = (first = false) => {
+  // Mostly the left and right sides (where it peeks in from the edge), sometimes top or bottom.
+  const goTo = (where) => {
     const w = window.innerWidth;
     const h = window.innerHeight;
     const s = SIZE();
-    const m = 12;
+    const m = 10;
     const top = 84; // clear of the sticky header
-    const spots = [
-      () => place(m, rand(h * 0.22, h * 0.72), 'left'),
-      () => place(w - s - m, rand(h * 0.2, h * 0.55), 'right'), // stays above the WhatsApp button
-      () => place(rand(w * 0.12, w * 0.7), top, 'top'),
-      () => place(rand(w * 0.05, w * 0.55), h - s - m, 'bottom'), // left of the WhatsApp button
-    ];
-    const options = spots.filter((_, i) => ['left', 'right', 'top', 'bottom'][i] !== edge || first);
+    if (where === 'left') place(m, rand(h * 0.2, h * 0.75), 'left');
+    else if (where === 'right') place(w - s - m, rand(h * 0.18, h * 0.58), 'right'); // above the WhatsApp button
+    else if (where === 'top') place(rand(w * 0.15, w * 0.65), top, 'top');
+    else place(rand(w * 0.06, w * 0.5), h - s - m, 'bottom'); // left of the WhatsApp button
+  };
+  const pickEdge = () => { const r = Math.random(); return r < 0.4 ? 'left' : r < 0.8 ? 'right' : r < 0.9 ? 'top' : 'bottom'; };
+  const roam = (where = pickEdge()) => {
     bot.classList.add('moving');
-    (first ? spots[3] : options[Math.floor(Math.random() * options.length)])();
+    goTo(where);
     setTimeout(() => bot.classList.remove('moving'), reduce ? 0 : 2600);
     setTimeout(look, reduce ? 0 : 2700);
   };
-  roam(true);
-  window.addEventListener('resize', () => roam(true));
+  roam(reduce ? 'left' : Math.random() < 0.5 ? 'left' : 'right');
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => goTo(edge), 200); });
 
   /* ---------- facts ---------- */
   let i = Math.floor(Math.random() * FACTS.length);
@@ -146,7 +148,7 @@
     const wander = () => { if (!document.hidden && !bot.classList.contains('talking')) roam(); setTimeout(wander, rand(14000, 22000)); };
     setTimeout(wander, 9000);
     setTimeout(() => showFact(), 6000);
-    setInterval(() => { if (!document.hidden && !bot.classList.contains('talking')) showFact(); }, 30000);
+    setInterval(() => { if (!document.hidden && !bot.classList.contains('talking')) showFact(); }, 35000);
   }
   if (!finePointer) setInterval(() => { target = { x: rand(0, window.innerWidth), y: rand(0, window.innerHeight) }; look(); }, 3500);
 })();

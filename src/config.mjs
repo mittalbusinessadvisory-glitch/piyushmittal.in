@@ -7,7 +7,7 @@ export const site = {
   message: 'I understand business problems, identify opportunities, and use AI to turn ideas into practical solutions.',
   description:
     'Piyush Mittal is a business growth and AI solutions consultant helping small businesses grow with strategy, websites, marketing and practical AI automation.',
-  email: 'piyushmittal92555@gmail.com',
+  email: 'mittalbusinessadvisory@gmail.com',
   phone: '+91 92555 80705', // shown on the site
   phoneE164: '+919255580705', // used for tel: and WhatsApp links
   photo: '/assets/piyush-mittal.jpg',

@@ -18,7 +18,7 @@ export const site = {
   // TODO: add ONLY profiles that are really yours. These become the `sameAs` links Google uses
   // to connect your website with your profiles — the single most important "Piyush Mittal" ranking signal.
   profiles: [
-    // { label: 'LinkedIn', url: 'https://www.linkedin.com/in/your-handle/' },
+    { label: 'LinkedIn', url: 'https://www.linkedin.com/in/piyush-mittal-a200b8201/' },
     // { label: 'GitHub', url: 'https://github.com/your-handle' },
     // { label: 'X', url: 'https://x.com/your-handle' },
     // { label: 'Instagram', url: 'https://www.instagram.com/your-handle/' },

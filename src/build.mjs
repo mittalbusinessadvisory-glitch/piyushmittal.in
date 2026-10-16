@@ -27,6 +27,7 @@ const ctaHref = site.calendarUrl || '/contact/';
 const ctaAttrs = site.calendarUrl ? ' target="_blank" rel="noopener"' : '';
 const pad = (n) => String(n).padStart(2, '0');
 const telHref = `tel:${site.phoneE164}`;
+const linkedin = site.profiles.find((p) => p.label === 'LinkedIn')?.url;
 const waHref = `https://wa.me/${site.phoneE164.replace('+', '')}`;
 // Responsive images: AVIF/WebP/JPEG at 480/800/1200 px (tools/build_images.py)
 const SIZES = {
@@ -515,6 +516,7 @@ emit('/about/', layout({
         <dt>Works with</dt><dd>Small &amp; owner-led businesses</dd>
         <dt>Based in</dt><dd>${site.location.locality ? esc(site.location.locality) + ', ' : ''}${esc(site.location.country)} · working remotely</dd>
         <dt>Email</dt><dd><a href="mailto:${site.email}">${site.email}</a></dd>
+        ${linkedin ? `<dt>LinkedIn</dt><dd><a href="${linkedin}" rel="me noopener" target="_blank">Connect with Piyush</a></dd>` : ''}
         <dt>Phone / WhatsApp</dt><dd><a href="${telHref}">${esc(site.phone)}</a> · <a href="${waHref}" target="_blank" rel="noopener">Chat on WhatsApp</a></dd>
       </dl>
     </aside>
@@ -601,7 +603,7 @@ posts.forEach((p) => {
   ${p.related ? `<aside class="wrap narrow help-box"><p class="footer-h">Want help putting this into practice?</p><ul>${p.related.map((slug) => svc(slug)).map((r) => `<li><a href="/services/${r.slug}/"><b>${esc(r.title)}</b><span>${esc(r.summary)}</span></a></li>`).join('')}</ul></aside>` : ''}
   <aside class="wrap narrow author-box">
     ${avatar('avatar lg')}
-    <div><p class="footer-h">About the author</p><p><strong>${esc(site.name)}</strong> is a business growth and AI solutions consultant helping small businesses find what's holding them back and fix it. <a href="/about/">More about Piyush</a>.</p></div>
+    <div><p class="footer-h">About the author</p><p><strong>${esc(site.name)}</strong> is a business growth and AI solutions consultant helping small businesses find what's holding them back and fix it. <a href="/about/">More about Piyush</a>${linkedin ? ` or <a href="${linkedin}" rel="me noopener" target="_blank">follow on LinkedIn</a>` : ''}.</p></div>
   </aside>
 </article>
 <section class="section section-tint">
@@ -631,7 +633,7 @@ emit('/contact/', layout({
         <li><b>We talk for 30 minutes</b> — free, no pitch deck.</li>
         <li><b>You get a clear recommendation</b> — what I'd do first, and whether I'm the right fit.</li>
       </ol>
-      <p class="direct" data-reveal>Prefer to reach out directly?<br>Email <a href="mailto:${site.email}">${site.email}</a><br>Call <a href="${telHref}">${esc(site.phone)}</a> or <a href="${waHref}" target="_blank" rel="noopener">message on WhatsApp</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
+      <p class="direct" data-reveal>Prefer to reach out directly?<br>${linkedin ? `Connect on <a href="${linkedin}" rel="me noopener" target="_blank">LinkedIn</a><br>` : ''}Email <a href="mailto:${site.email}">${site.email}</a><br>Call <a href="${telHref}">${esc(site.phone)}</a> or <a href="${waHref}" target="_blank" rel="noopener">message on WhatsApp</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
     </div>
     <form class="contact-form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="_gotcha" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
       <input type="hidden" name="form-name" value="contact">

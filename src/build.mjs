@@ -171,7 +171,8 @@ ${body}
 </footer>
 <a class="fab-wa" href="${waHref}?text=${encodeURIComponent('Hi Piyush, I found your website and would like to talk about my business.')}" target="_blank" rel="noopener" aria-label="Chat with ${esc(site.name)} on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7Zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.6.7.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5 0-.2-.3-.3-.6-.4Z"/></svg><span>Chat on WhatsApp</span></a>
 <button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5m-4.5 4.5L10 5l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<script src="/assets/site.js" defer></script>${scripts.map((s) => `
+<script src="/assets/site.js" defer></script>
+<script src="/assets/bot.js" defer></script>${scripts.map((s) => `
 <script src="${s}" defer></script>`).join('')}
 </body>
 </html>
@@ -274,7 +275,7 @@ emit('/', layout({
     <div class="diag-wrap">
     <span class="sticker sticker-1" aria-hidden="true">AI-powered ⚡</span>
     <span class="sticker sticker-2" aria-hidden="true">No jargon</span>
-    <span class="sticker sticker-3" aria-hidden="true">Fixed price ✓</span>
+    <span class="sticker sticker-3" aria-hidden="true">Business first ✓</span>
     <aside class="diag" data-reveal aria-label="Example of a business growth diagnostic">
       <div class="diag-head"><span>Growth diagnostic</span><span class="diag-tag">Example</span></div>
       <ul class="diag-list">
@@ -815,7 +816,7 @@ const minCss = (s) => s
 // conservative: drop comment-only lines and indentation, keep line breaks (no ASI risk)
 const minJs = (s) => s.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//') && !l.startsWith('/*')).join('\n');
 const assets = {};
-for (const [file, min] of [['styles.css', minCss], ['site.js', minJs], ['office.js', minJs]]) {
+for (const [file, min] of [['styles.css', minCss], ['site.js', minJs], ['office.js', minJs], ['bot.js', minJs]]) {
   const p = join(out, 'assets', file);
   const code = min(readFileSync(p, 'utf8'));
   const name = file.replace('.', `.${hash(code)}.`);

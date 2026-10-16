@@ -397,7 +397,7 @@ export const engagements = [
     tag: 'Most popular',
     length: '3–8 weeks',
     summary: 'A fixed-scope project that ships the fix: a website, an automation, a campaign or a new process.',
-    points: ['Clear scope, timeline and price up front', 'Weekly progress updates', 'Launch, training and handover', '30 days of post-launch support'],
+    points: ['Clear scope and timeline up front', 'Weekly progress updates', 'Launch, training and handover', '30 days of post-launch support'],
     featured: true,
   },
   {
@@ -412,7 +412,7 @@ export const engagements = [
 export const homeFaqs = [
   ['What kind of businesses do you work with?', 'Small and owner-led businesses — local services, manufacturers, traders, travel, retail and professional firms. If you have customers and want more of the right ones, we should talk.'],
   ['Do you work with clients outside my city?', 'Yes. Most work happens over video calls, WhatsApp and shared documents, so I work with businesses across India and abroad.'],
-  ['How much does it cost?', 'It depends on scope. Every project starts with a free 30-minute call; after it you get a clear proposal with a fixed price, so there are no surprises. Tell me your budget and I will tell you honestly what it can achieve.'],
+  ['How much does it cost?', 'It depends on scope. Every project starts with a free 30-minute call; after it you get a clear written proposal with the scope, timeline and cost, so you know exactly what you are agreeing to. Tell me your budget and I will tell you honestly what it can achieve.'],
   ['How quickly can we start?', 'Usually within one to two weeks of the first call. Small fixes, like a sharper homepage or a first automation, can often go live in days.'],
   ['What should I prepare for the first call?', 'Nothing formal. A rough idea of your monthly revenue, where customers come from, and the one problem you most want solved is plenty.'],
 ];

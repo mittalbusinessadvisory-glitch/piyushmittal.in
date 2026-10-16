@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './config.mjs';
 import { services, posts, healthCheck, engagements, homeFaqs } from './content.mjs';
+import { officeBody } from './office.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'dist');
@@ -86,11 +87,11 @@ const breadcrumb = (trail) => ({
 
 const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '' }) {
+function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '', scripts = [] }) {
   const shareImage = image ? abs(image.src) : abs('/assets/og-image.jpg');
   const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
-  const navItems = [['Services', '/services/'], ['About', '/about/'], ['Insights', '/insights/']];
+  const navItems = [['Services', '/services/'], ['Office', '/office/'], ['About', '/about/'], ['Insights', '/insights/']];
   const jsonld = { '@context': 'https://schema.org', '@graph': schema };
   return `<!doctype html>
 <html lang="en-IN">
@@ -134,7 +135,7 @@ ${schema.length ? `<script type="application/ld+json">${JSON.stringify(jsonld)}<
     <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">PM</span><span class="brand-name">${esc(site.name)}</span></a>
     <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span class="sr">Menu</span><span class="bars" aria-hidden="true"></span></button>
     <nav id="site-nav" class="site-nav" aria-label="Main">
-      ${navItems.map(([l, h]) => `<a href="${h}"${nav === h ? ' aria-current="page"' : ''}>${l}</a>`).join('')}
+      ${navItems.map(([l, h]) => `<a href="${h}"${nav === h ? ' aria-current="page"' : ''}>${l}${h === '/office/' ? '<span class="nav-new">New</span>' : ''}</a>`).join('')}
       <a class="btn btn-small" href="/contact/"${nav === '/contact/' ? ' aria-current="page"' : ''}>Let's talk</a>
     </nav>
   </div>
@@ -161,7 +162,7 @@ ${body}
       </div>
       <div>
         <p class="footer-h">Explore</p>
-        <ul><li><a href="/about/">About</a></li><li><a href="/insights/">Insights</a></li><li><a href="/contact/">Contact</a></li></ul>
+        <ul><li><a href="/office/">Virtual office</a></li><li><a href="/about/">About</a></li><li><a href="/insights/">Insights</a></li><li><a href="/contact/">Contact</a></li></ul>
       </div>
       ${site.profiles.length ? `<div><p class="footer-h">Elsewhere</p><ul>${site.profiles.map((p) => `<li><a href="${p.url}" rel="me noopener" target="_blank">${esc(p.label)}</a></li>`).join('')}</ul></div>` : ''}
     </div>
@@ -170,7 +171,8 @@ ${body}
 </footer>
 <a class="fab-wa" href="${waHref}?text=${encodeURIComponent('Hi Piyush, I found your website and would like to talk about my business.')}" target="_blank" rel="noopener" aria-label="Chat with ${esc(site.name)} on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7Zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.6.7.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5 0-.2-.3-.3-.6-.4Z"/></svg><span>Chat on WhatsApp</span></a>
 <button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5m-4.5 4.5L10 5l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<script src="/assets/site.js" defer></script>
+<script src="/assets/site.js" defer></script>${scripts.map((s) => `
+<script src="${s}" defer></script>`).join('')}
 </body>
 </html>
 `;
@@ -633,6 +635,7 @@ emit('/contact/', layout({
         <li><b>We talk for 30 minutes</b> — free, no pitch deck.</li>
         <li><b>You get a clear recommendation</b> — what I'd do first, and whether I'm the right fit.</li>
       </ol>
+      <p class="direct" data-reveal>Want something more fun? <a href="/office/">Walk into my virtual office</a> and the front desk will take your request.</p>
       <p class="direct" data-reveal>Prefer to reach out directly?<br>${linkedin ? `Connect on <a href="${linkedin}" rel="me noopener" target="_blank">LinkedIn</a><br>` : ''}Email <a href="mailto:${site.email}">${site.email}</a><br>Call <a href="${telHref}">${esc(site.phone)}</a> or <a href="${waHref}" target="_blank" rel="noopener">message on WhatsApp</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
     </div>
     <form class="contact-form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="_gotcha" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
@@ -655,6 +658,17 @@ emit('/contact/', layout({
     </form>
   </div>
 </section>`,
+}), { priority: '0.8' });
+
+/* ---------------- Virtual office ---------------- */
+emit('/office/', layout({
+  path: '/office/',
+  nav: '/office/',
+  title: `Virtual Office — Walk In and Ask | ${site.name}`,
+  description: "Visit Piyush Mittal's virtual office: tell the front desk what you need, get a visitor slip and have it delivered to Piyush's cabin.",
+  schema: [breadcrumb([['Office', '/office/']]), { '@type': 'ContactPage', url: abs('/office/'), name: `Virtual office of ${site.name}`, about: { '@id': PERSON_ID } }],
+  scripts: ['/assets/office.js'],
+  body: officeBody({ site, esc, waHref, ARROW, crumbs }),
 }), { priority: '0.8' });
 
 /* ---------------- Privacy & thanks ---------------- */
@@ -771,7 +785,7 @@ const minCss = (s) => s
 // conservative: drop comment-only lines and indentation, keep line breaks (no ASI risk)
 const minJs = (s) => s.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//') && !l.startsWith('/*')).join('\n');
 const assets = {};
-for (const [file, min] of [['styles.css', minCss], ['site.js', minJs]]) {
+for (const [file, min] of [['styles.css', minCss], ['site.js', minJs], ['office.js', minJs]]) {
   const p = join(out, 'assets', file);
   const code = min(readFileSync(p, 'utf8'));
   const name = file.replace('.', `.${hash(code)}.`);

@@ -185,9 +185,9 @@ p { margin: 0 0 1em; }
 /* About teaser / portrait */
 .about-teaser { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
 .about-teaser p:not(.eyebrow):not(.lede) { color: var(--muted); }
-.portrait { aspect-ratio: 4 / 5; border-radius: 20px; background: radial-gradient(120% 90% at 20% 10%, #2c6a50 0%, var(--accent) 45%, #12301f 100%); display: grid; place-items: center; color: rgba(240,236,226,.92); position: relative; overflow: hidden; }
-.portrait span { font: 300 clamp(4rem, 10vw, 7.5rem)/1 var(--serif); letter-spacing: -0.04em; font-style: italic; }
-.portrait::after { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(240,236,226,.22); border-radius: 12px; }
+.portrait { display: block; aspect-ratio: 4 / 5; border-radius: 20px; background: var(--paper-2); position: relative; overflow: hidden; box-shadow: 0 30px 60px -34px rgba(40, 35, 20, .45); }
+.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.portrait::after { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(255,255,255,.28); border-radius: 12px; pointer-events: none; }
 
 /* Page hero */
 .page-hero { padding: clamp(40px, 6vw, 80px) 0 clamp(48px, 7vw, 96px); }
@@ -232,8 +232,8 @@ p { margin: 0 0 1em; }
 .article-body > p:first-child::first-letter { font: 400 3.6em/.85 var(--serif); float: left; margin: .08em .1em 0 0; color: var(--accent); }
 .byline { display: flex; align-items: center; gap: .7rem; font-size: .92rem; color: var(--muted); margin-top: 1.6rem; }
 .byline a { color: var(--ink); }
-.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--on-ink); display: inline-grid; place-items: center; font: italic 300 .9rem/1 var(--serif); flex: none; }
-.avatar.lg { width: 64px; height: 64px; font-size: 1.4rem; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--paper-2); flex: none; }
+.avatar.lg { width: 64px; height: 64px; }
 .author-box { display: flex; gap: 1.2rem; align-items: flex-start; padding-top: 2rem; padding-bottom: 4rem; border-top: 1px solid var(--line); }
 .author-box p { margin: 0; color: var(--muted); }
 .author-box .footer-h { margin-bottom: .4rem; }
@@ -313,7 +313,7 @@ p { margin: 0 0 1em; }
   .svc-list .arrow { grid-row: 1 / span 2; grid-column: 3; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .portrait { max-width: 360px; }
-  .about-hero .portrait { display: none; }
+  .about-hero .portrait { max-width: 280px; }
   .facts dl { position: static; }
   .section-head.split { flex-direction: column; align-items: flex-start; }
 }

@@ -20,6 +20,11 @@ const svc = (slug) => services.find((s) => s.slug === slug);
 const ctaHref = site.calendarUrl || '/contact/';
 const ctaAttrs = site.calendarUrl ? ' target="_blank" rel="noopener"' : '';
 const pad = (n) => String(n).padStart(2, '0');
+const telHref = `tel:${site.phoneE164}`;
+const waHref = `https://wa.me/${site.phoneE164.replace('+', '')}`;
+const portrait = (eager = false) =>
+  `<picture class="portrait" data-reveal><source srcset="${site.photo.replace('.jpg', '.webp')}" type="image/webp"><img src="${site.photo}" alt="${esc(site.name)}, business growth and AI solutions consultant" width="520" height="650"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+const avatar = (cls = 'avatar') => `<img class="${cls}" src="${site.headshot}" alt="" width="64" height="64" loading="lazy" decoding="async">`;
 
 const PERSON_ID = abs('/#person');
 const WEBSITE_ID = abs('/#website');
@@ -31,7 +36,8 @@ const person = {
   jobTitle: site.jobTitle,
   description: site.description,
   email: `mailto:${site.email}`,
-  image: abs('/assets/og-image.png'), // TODO: replace with a real headshot URL (e.g. /assets/piyush-mittal.jpg)
+  telephone: site.phoneE164,
+  image: abs(site.photo),
   knowsAbout: site.knowsAbout,
   address: { '@type': 'PostalAddress', addressCountry: site.location.country, ...(site.location.locality && { addressLocality: site.location.locality }), ...(site.location.region && { addressRegion: site.location.region }) },
   ...(site.profiles.length && { sameAs: site.profiles.map((p) => p.url) }),
@@ -108,7 +114,7 @@ ${body}
       <div>
         <p class="footer-name">${esc(site.name)}</p>
         <p class="footer-role">${esc(site.jobTitle)}${site.location.locality ? ` · ${esc(site.location.locality)}` : ''}, ${esc(site.location.country)}</p>
-        <p><a href="mailto:${site.email}">${site.email}</a></p>
+        <p><a href="mailto:${site.email}">${site.email}</a><br><a href="${telHref}">${esc(site.phone)}</a> · <a href="${waHref}" target="_blank" rel="noopener">WhatsApp</a></p>
       </div>
       <div>
         <p class="footer-h">Services</p>
@@ -248,7 +254,7 @@ emit('/', layout({
 
 <section class="section section-tint">
   <div class="wrap about-teaser">
-    <div class="portrait" data-reveal aria-hidden="true"><span>PM</span></div>
+    ${portrait()}
     <div data-reveal>
       <p class="eyebrow">About</p>
       <h2>A business mind with a builder's toolkit</h2>
@@ -380,7 +386,7 @@ emit('/about/', layout({
       <h1 data-reveal>I'm ${esc(site.name)}. I help small businesses <em>grow on purpose</em>.</h1>
       <p class="lede" data-reveal>${esc(site.message)}</p>
     </div>
-    <div class="portrait" data-reveal aria-hidden="true"><span>PM</span></div>
+    ${portrait(true)}
   </div>
 </section>
 <section class="section pt0">
@@ -390,7 +396,8 @@ emit('/about/', layout({
         <dt>Focus</dt><dd>Business growth + AI solutions</dd>
         <dt>Works with</dt><dd>Small &amp; owner-led businesses</dd>
         <dt>Based in</dt><dd>${site.location.locality ? esc(site.location.locality) + ', ' : ''}${esc(site.location.country)} · working remotely</dd>
-        <dt>Contact</dt><dd><a href="mailto:${site.email}">${site.email}</a></dd>
+        <dt>Email</dt><dd><a href="mailto:${site.email}">${site.email}</a></dd>
+        <dt>Phone / WhatsApp</dt><dd><a href="${telHref}">${esc(site.phone)}</a> · <a href="${waHref}" target="_blank" rel="noopener">Chat on WhatsApp</a></dd>
       </dl>
     </aside>
     <div class="prose" data-reveal>
@@ -448,7 +455,7 @@ posts.forEach((p) => {
     type: 'article',
     schema: [
       breadcrumb([['Insights', '/insights/'], [p.title, path]]),
-      { '@type': 'BlogPosting', '@id': abs(path + '#article'), headline: p.title, description: p.description, datePublished: p.date, dateModified: p.date, url: abs(path), mainEntityOfPage: abs(path), image: abs('/assets/og-image.png'), author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, isPartOf: { '@id': abs('/insights/#blog') }, inLanguage: 'en-IN' },
+      { '@type': 'BlogPosting', '@id': abs(path + '#article'), headline: p.title, description: p.description, datePublished: p.date, dateModified: p.date, url: abs(path), mainEntityOfPage: abs(path), image: abs(site.photo), author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, isPartOf: { '@id': abs('/insights/#blog') }, inLanguage: 'en-IN' },
       person,
     ],
     body: `
@@ -459,12 +466,12 @@ posts.forEach((p) => {
       <p class="meta" data-reveal><span class="tag">${esc(p.tag)}</span><time datetime="${p.date}">${fmtDate(p.date)}</time> · ${p.readingTime} min read</p>
       <h1 data-reveal>${esc(p.title)}</h1>
       <p class="lede" data-reveal>${esc(p.description)}</p>
-      <p class="byline" data-reveal><span class="avatar" aria-hidden="true">PM</span>By <a href="/about/" rel="author">${esc(site.name)}</a></p>
+      <p class="byline" data-reveal>${avatar()}By <a href="/about/" rel="author">${esc(site.name)}</a></p>
     </div>
   </header>
   <div class="wrap narrow prose article-body">${p.body}</div>
   <aside class="wrap narrow author-box">
-    <span class="avatar lg" aria-hidden="true">PM</span>
+    ${avatar('avatar lg')}
     <div><p class="footer-h">About the author</p><p><strong>${esc(site.name)}</strong> is a business growth and AI solutions consultant helping small businesses find what's holding them back and fix it. <a href="/about/">More about Piyush</a>.</p></div>
   </aside>
 </article>
@@ -495,7 +502,7 @@ emit('/contact/', layout({
         <li><b>We talk for 30 minutes</b> — free, no pitch deck.</li>
         <li><b>You get a clear recommendation</b> — what I'd do first, and whether I'm the right fit.</li>
       </ol>
-      <p class="direct" data-reveal>Prefer email? <a href="mailto:${site.email}">${site.email}</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
+      <p class="direct" data-reveal>Prefer to reach out directly?<br>Email <a href="mailto:${site.email}">${site.email}</a><br>Call <a href="${telHref}">${esc(site.phone)}</a> or <a href="${waHref}" target="_blank" rel="noopener">message on WhatsApp</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
     </div>
     <form class="contact-form" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
       <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>

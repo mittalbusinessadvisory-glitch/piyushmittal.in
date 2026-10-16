@@ -1,11 +1,17 @@
 // All page copy lives here so it can be edited without touching templates.
 
-// Images in src/static/assets/img (each has a .jpg and a .webp).
+// Images in src/static/assets/img (each has a .jpg and a .webp). Photos from Unsplash (free licence).
 const img = {
-  growth: { src: '/assets/img/business-growth.jpg', w: 805, h: 381, alt: 'Business growth chart rising on a digital display' },
-  aiAssistant: { src: '/assets/img/ai-assistant.jpg', w: 540, h: 360, alt: 'Friendly AI assistant robot' },
-  partnership: { src: '/assets/img/global-partnership.jpg', w: 640, h: 427, alt: 'Business handshake over a connected world map' },
-  humanAi: { src: '/assets/img/human-ai-partnership.jpg', w: 728, h: 421, alt: 'Handshake between a business person and an AI robot hand' },
+  growth: { src: '/assets/img/growth-strategy.jpg', w: 1200, h: 675, alt: 'Laptop showing business growth charts on a sunlit desk' },
+  ai: { src: '/assets/img/ai-automation.jpg', w: 1200, h: 800, alt: 'Friendly humanoid AI assistant robot' },
+  web: { src: '/assets/img/website-development.jpg', w: 1200, h: 799, alt: 'Laptop with website code on a clean desk' },
+  seo: { src: '/assets/img/digital-marketing-seo.jpg', w: 1200, h: 855, alt: 'Marketing analytics dashboard on a laptop' },
+  research: { src: '/assets/img/market-research.jpg', w: 1200, h: 675, alt: 'Team organising research insights with sticky notes' },
+  process: { src: '/assets/img/process-improvement.jpg', w: 1200, h: 800, alt: 'Person mapping a business process on a whiteboard' },
+  leads: { src: '/assets/img/lead-generation.jpg', w: 1200, h: 801, alt: 'Business handshake closing a new deal' },
+  aiHand: { src: '/assets/img/ai-human-hand.jpg', w: 1200, h: 727, alt: 'A person touching the hand of a white robot' },
+  smallBiz: { src: '/assets/img/small-business.jpg', w: 1200, h: 800, alt: 'Customer being served at a small business counter' },
+  webLeads: { src: '/assets/img/website-leads.jpg', w: 1200, h: 800, alt: 'Person browsing a business website on laptop and phone' },
 };
 
 export const services = [
@@ -48,7 +54,7 @@ export const services = [
   },
   {
     slug: 'ai-implementation-workflow-automation',
-    image: img.aiAssistant,
+    image: img.ai,
     title: 'AI Implementation & Workflow Automation',
     short: 'AI & Automation',
     summary: 'Practical AI that removes repetitive work — lead follow-up, reporting, support, data entry — without a big IT project.',
@@ -85,6 +91,7 @@ export const services = [
   },
   {
     slug: 'website-development',
+    image: img.web,
     title: 'Website Development',
     short: 'Websites',
     summary: 'Fast, credible websites built to turn visitors into enquiries — not just to look good.',
@@ -121,6 +128,7 @@ export const services = [
   },
   {
     slug: 'digital-marketing-seo',
+    image: img.seo,
     title: 'Digital Marketing & SEO',
     short: 'Marketing & SEO',
     summary: 'Get found by people already searching for what you sell — and turn that attention into customers.',
@@ -157,6 +165,7 @@ export const services = [
   },
   {
     slug: 'market-research-competitor-analysis',
+    image: img.research,
     title: 'Market Research & Competitor Analysis',
     short: 'Market Research',
     summary: 'Know your market, your customers and your competitors well enough to make confident decisions.',
@@ -193,6 +202,7 @@ export const services = [
   },
   {
     slug: 'business-weakness-analysis-process-improvement',
+    image: img.process,
     title: 'Business Weakness Analysis & Process Improvement',
     short: 'Process Improvement',
     summary: 'Find the leaks that quietly cost you money and time — then fix the process, not just the symptom.',
@@ -229,7 +239,7 @@ export const services = [
   },
   {
     slug: 'online-presence-lead-generation',
-    image: img.partnership,
+    image: img.leads,
     title: 'Online Presence & Lead Generation',
     short: 'Lead Generation',
     summary: 'A connected system — profiles, website, content and follow-up — that brings in a steady flow of qualified enquiries.',
@@ -269,7 +279,7 @@ export const services = [
 export const posts = [
   {
     slug: 'where-small-businesses-should-start-with-ai',
-    image: img.humanAi,
+    image: img.aiHand,
     title: 'Where small businesses should actually start with AI',
     description: 'Skip the hype. A practical way for small business owners to find the first AI use case that pays for itself.',
     date: '2026-10-01',
@@ -306,7 +316,7 @@ export const posts = [
   },
   {
     slug: 'five-leaks-that-quietly-kill-small-business-growth',
-    image: img.growth,
+    image: img.smallBiz,
     title: 'The five leaks that quietly kill small business growth',
     description: 'Revenue rarely stalls for one big reason. It leaks through small, fixable gaps. Here are the five most common — and how to spot them.',
     date: '2026-09-18',
@@ -330,7 +340,7 @@ export const posts = [
   },
   {
     slug: 'why-your-website-is-not-generating-leads',
-    image: img.partnership,
+    image: img.webLeads,
     title: 'Why your website isn\'t generating leads (and what to fix first)',
     description: 'Traffic without enquiries is a clarity problem, not a design problem. A priority-ordered checklist for small business websites.',
     date: '2026-09-02',

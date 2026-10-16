@@ -304,7 +304,7 @@ emit('/services/', layout({
 <section class="section pt0">
   <div class="wrap">
     <div class="svc-grid">
-      ${services.map((s, i) => `<article class="svc-card" data-reveal><a href="/services/${s.slug}/"><span class="num">${pad(i + 1)}</span><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><ul>${s.deliverables.slice(0, 3).map((d) => `<li>${esc(d)}</li>`).join('')}</ul><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}
+      ${services.map((s, i) => `<article class="svc-card" data-reveal><a href="/services/${s.slug}/">${s.image ? pic(s.image, { cls: 'card-img' }) : ''}<span class="num">${pad(i + 1)}</span><h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p><ul>${s.deliverables.slice(0, 3).map((d) => `<li>${esc(d)}</li>`).join('')}</ul><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}
     </div>
   </div>
 </section>
@@ -371,7 +371,7 @@ services.forEach((s, idx) => {
 <section class="section">
   <div class="wrap">
     <header class="section-head" data-reveal><p class="eyebrow">Often paired with</p><h2>Related services</h2></header>
-    <div class="card-grid">${s.related.map((r) => svc(r)).map((r) => `<article class="svc-card" data-reveal><a href="/services/${r.slug}/"><h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}</div>
+    <div class="card-grid">${s.related.map((r) => svc(r)).map((r) => `<article class="svc-card" data-reveal><a href="/services/${r.slug}/">${r.image ? pic(r.image, { cls: 'card-img' }) : ''}<h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><span class="link">Learn more ${ARROW}</span></a></article>`).join('')}</div>
   </div>
 </section>
 ${ctaBand()}`,

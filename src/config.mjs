@@ -19,6 +19,7 @@ export const site = {
   // to connect your website with your profiles — the single most important "Piyush Mittal" ranking signal.
   profiles: [
     { label: 'LinkedIn', url: 'https://www.linkedin.com/in/piyush-mittal-a200b8201/' },
+    { label: 'Instagram', url: 'https://www.instagram.com/piyushmittalhq/' },
     // { label: 'GitHub', url: 'https://github.com/your-handle' },
     // { label: 'X', url: 'https://x.com/your-handle' },
     // { label: 'Instagram', url: 'https://www.instagram.com/your-handle/' },

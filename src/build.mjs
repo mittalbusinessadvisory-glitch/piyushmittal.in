@@ -24,6 +24,8 @@ const telHref = `tel:${site.phoneE164}`;
 const waHref = `https://wa.me/${site.phoneE164.replace('+', '')}`;
 const portrait = (eager = false) =>
   `<picture class="portrait" data-reveal><source srcset="${site.photo.replace('.jpg', '.webp')}" type="image/webp"><img src="${site.photo}" alt="${esc(site.name)}, business growth and AI solutions consultant" width="520" height="650"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+const pic = (im, { cls = '', eager = false } = {}) =>
+  `<picture${cls ? ` class="${cls}"` : ''}><source srcset="${im.src.replace('.jpg', '.webp')}" type="image/webp"><img src="${im.src}" alt="${esc(im.alt)}" width="${im.w}" height="${im.h}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
 const avatar = (cls = 'avatar') => `<img class="${cls}" src="${site.headshot}" alt="" width="64" height="64" loading="lazy" decoding="async">`;
 
 const PERSON_ID = abs('/#person');
@@ -50,7 +52,9 @@ const breadcrumb = (trail) => ({
 
 const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false }) {
+function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null }) {
+  const shareImage = image ? abs(image.src) : abs('/assets/og-image.png');
+  const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
   const navItems = [['Services', '/services/'], ['About', '/about/'], ['Insights', '/insights/']];
   const jsonld = { '@context': 'https://schema.org', '@graph': schema };
@@ -70,14 +74,14 @@ ${noindex ? '<meta name="robots" content="noindex">' : '<meta name="robots" cont
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${abs('/assets/og-image.png')}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image" content="${shareImage}">
+<meta property="og:image:width" content="${shareSize[0]}">
+<meta property="og:image:height" content="${shareSize[1]}">
 <meta property="og:locale" content="en_IN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-<meta name="twitter:image" content="${abs('/assets/og-image.png')}">
+<meta name="twitter:image" content="${shareImage}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
@@ -156,6 +160,7 @@ const ctaBand = (heading = 'Have a problem worth solving?', text = 'Tell me what
 const postCard = (p) => `
 <article class="post-card" data-reveal>
   <a href="/insights/${p.slug}/">
+    ${p.image ? pic(p.image, { cls: 'card-img' }) : ''}
     <p class="meta"><span class="tag">${esc(p.tag)}</span><time datetime="${p.date}">${fmtDate(p.date)}</time></p>
     <h3>${esc(p.title)}</h3>
     <p>${esc(p.description)}</p>
@@ -312,6 +317,7 @@ services.forEach((s, idx) => {
     path,
     nav: '/services/',
     title: `${s.title} | ${site.name}`,
+    image: s.image,
     description: s.metaDescription,
     schema: [
       breadcrumb([['Services', '/services/'], [s.title, path]]),
@@ -321,12 +327,15 @@ services.forEach((s, idx) => {
     ],
     body: `
 <section class="page-hero">
-  <div class="wrap">
-    ${crumbs([['Services', '/services/'], [s.short, path]])}
-    <p class="eyebrow" data-reveal>Service ${pad(idx + 1)} / ${pad(services.length)}</p>
-    <h1 data-reveal>${esc(s.title)}</h1>
-    <p class="lede" data-reveal>${esc(s.intro)}</p>
-    <div class="hero-actions" data-reveal><a class="btn" href="${ctaHref}"${ctaAttrs}>Discuss your project ${ARROW}</a></div>
+  <div class="wrap${s.image ? ' hero-media' : ''}">
+    <div>
+      ${crumbs([['Services', '/services/'], [s.short, path]])}
+      <p class="eyebrow" data-reveal>Service ${pad(idx + 1)} / ${pad(services.length)}</p>
+      <h1 data-reveal>${esc(s.title)}</h1>
+      <p class="lede" data-reveal>${esc(s.intro)}</p>
+      <div class="hero-actions" data-reveal><a class="btn" href="${ctaHref}"${ctaAttrs}>Discuss your project ${ARROW}</a></div>
+    </div>
+    ${s.image ? pic(s.image, { cls: 'media-img', eager: true }) : ''}
   </div>
 </section>
 <section class="section pt0">
@@ -451,11 +460,12 @@ posts.forEach((p) => {
     path,
     nav: '/insights/',
     title: `${p.title} | ${site.name}`,
+    image: p.image,
     description: p.description,
     type: 'article',
     schema: [
       breadcrumb([['Insights', '/insights/'], [p.title, path]]),
-      { '@type': 'BlogPosting', '@id': abs(path + '#article'), headline: p.title, description: p.description, datePublished: p.date, dateModified: p.date, url: abs(path), mainEntityOfPage: abs(path), image: abs(site.photo), author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, isPartOf: { '@id': abs('/insights/#blog') }, inLanguage: 'en-IN' },
+      { '@type': 'BlogPosting', '@id': abs(path + '#article'), headline: p.title, description: p.description, datePublished: p.date, dateModified: p.date, url: abs(path), mainEntityOfPage: abs(path), image: abs(p.image ? p.image.src : site.photo), author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID }, isPartOf: { '@id': abs('/insights/#blog') }, inLanguage: 'en-IN' },
       person,
     ],
     body: `
@@ -469,6 +479,7 @@ posts.forEach((p) => {
       <p class="byline" data-reveal>${avatar()}By <a href="/about/" rel="author">${esc(site.name)}</a></p>
     </div>
   </header>
+  ${p.image ? `<div class="wrap narrow">${pic(p.image, { cls: 'cover-img', eager: true })}</div>` : ''}
   <div class="wrap narrow prose article-body">${p.body}</div>
   <aside class="wrap narrow author-box">
     ${avatar('avatar lg')}

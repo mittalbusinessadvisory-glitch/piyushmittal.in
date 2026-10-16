@@ -1,8 +1,17 @@
 // All page copy lives here so it can be edited without touching templates.
 
+// Images in src/static/assets/img (each has a .jpg and a .webp).
+const img = {
+  growth: { src: '/assets/img/business-growth.jpg', w: 805, h: 381, alt: 'Business growth chart rising on a digital display' },
+  aiAssistant: { src: '/assets/img/ai-assistant.jpg', w: 540, h: 360, alt: 'Friendly AI assistant robot' },
+  partnership: { src: '/assets/img/global-partnership.jpg', w: 640, h: 427, alt: 'Business handshake over a connected world map' },
+  humanAi: { src: '/assets/img/human-ai-partnership.jpg', w: 728, h: 421, alt: 'Handshake between a business person and an AI robot hand' },
+};
+
 export const services = [
   {
     slug: 'business-consulting-growth-strategy',
+    image: img.growth,
     title: 'Business Consulting & Growth Strategy',
     short: 'Growth Strategy',
     summary: 'A clear, prioritised plan for where your next stage of growth comes from — and what to stop doing.',
@@ -39,6 +48,7 @@ export const services = [
   },
   {
     slug: 'ai-implementation-workflow-automation',
+    image: img.aiAssistant,
     title: 'AI Implementation & Workflow Automation',
     short: 'AI & Automation',
     summary: 'Practical AI that removes repetitive work — lead follow-up, reporting, support, data entry — without a big IT project.',
@@ -219,6 +229,7 @@ export const services = [
   },
   {
     slug: 'online-presence-lead-generation',
+    image: img.partnership,
     title: 'Online Presence & Lead Generation',
     short: 'Lead Generation',
     summary: 'A connected system — profiles, website, content and follow-up — that brings in a steady flow of qualified enquiries.',
@@ -258,6 +269,7 @@ export const services = [
 export const posts = [
   {
     slug: 'where-small-businesses-should-start-with-ai',
+    image: img.humanAi,
     title: 'Where small businesses should actually start with AI',
     description: 'Skip the hype. A practical way for small business owners to find the first AI use case that pays for itself.',
     date: '2026-10-01',
@@ -294,6 +306,7 @@ export const posts = [
   },
   {
     slug: 'five-leaks-that-quietly-kill-small-business-growth',
+    image: img.growth,
     title: 'The five leaks that quietly kill small business growth',
     description: 'Revenue rarely stalls for one big reason. It leaks through small, fixable gaps. Here are the five most common — and how to spot them.',
     date: '2026-09-18',
@@ -317,6 +330,7 @@ export const posts = [
   },
   {
     slug: 'why-your-website-is-not-generating-leads',
+    image: img.partnership,
     title: 'Why your website isn\'t generating leads (and what to fix first)',
     description: 'Traffic without enquiries is a clarity problem, not a design problem. A priority-ordered checklist for small business websites.',
     date: '2026-09-02',

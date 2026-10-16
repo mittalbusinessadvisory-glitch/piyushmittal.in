@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './config.mjs';
-import { services, posts } from './content.mjs';
+import { services, posts, healthCheck, engagements, homeFaqs } from './content.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'dist');
@@ -105,6 +105,7 @@ ${schema.length ? `<script type="application/ld+json">${JSON.stringify(jsonld)}<
     </nav>
   </div>
 </header>
+<div class="progress" aria-hidden="true"><span></span></div>
 <main id="main">
 ${body}
 </main>
@@ -130,9 +131,11 @@ ${body}
       </div>
       ${site.profiles.length ? `<div><p class="footer-h">Elsewhere</p><ul>${site.profiles.map((p) => `<li><a href="${p.url}" rel="me noopener" target="_blank">${esc(p.label)}</a></li>`).join('')}</ul></div>` : ''}
     </div>
-    <p class="footer-legal">© ${new Date().getFullYear()} ${esc(site.name)}. All rights reserved.</p>
+    <p class="footer-legal"><span>© ${new Date().getFullYear()} ${esc(site.name)}. All rights reserved.</span><a href="/privacy/">Privacy</a></p>
   </div>
 </footer>
+<a class="fab-wa" href="${waHref}?text=${encodeURIComponent('Hi Piyush, I found your website and would like to talk about my business.')}" target="_blank" rel="noopener" aria-label="Chat with ${esc(site.name)} on WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7Zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5 0-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.6.7.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5 0-.2-.3-.3-.6-.4Z"/></svg><span>Chat on WhatsApp</span></a>
+<button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5m-4.5 4.5L10 5l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 <script src="/assets/site.js" defer></script>
 </body>
 </html>
@@ -168,6 +171,30 @@ const postCard = (p) => `
   </a>
 </article>`;
 
+const savingsCalc = `
+<section class="section" id="savings">
+  <div class="wrap calc-wrap">
+    <header data-reveal>
+      <p class="eyebrow">Savings calculator</p>
+      <h2>What is repetitive work <em>costing</em> you?</h2>
+      <p class="lede">Move the sliders to match your team. The estimate shows the time and money a well-chosen automation could give back each year.</p>
+      <p class="muted small">Estimates only — real savings depend on the task. A free call gives you a proper number.</p>
+    </header>
+    <form class="calc" data-reveal data-calc onsubmit="return false">
+      <label><span>People doing repetitive tasks <output data-for="people">3</output></span><input type="range" name="people" min="1" max="25" value="3"></label>
+      <label><span>Hours per person each week <output data-for="hours">6</output></span><input type="range" name="hours" min="1" max="30" value="6"></label>
+      <label><span>Cost of one hour of their time (₹) <output data-for="rate">300</output></span><input type="range" name="rate" min="100" max="2000" step="50" value="300"></label>
+      <label><span>Share that can be automated <output data-for="share">50</output>%</span><input type="range" name="share" min="20" max="80" step="5" value="50"></label>
+      <div class="calc-out" aria-live="polite">
+        <div><b data-out="hours">0</b><span>hours saved a year</span></div>
+        <div><b data-out="days">0</b><span>working days freed</span></div>
+        <div class="big"><b data-out="money">₹0</b><span>value returned every year</span></div>
+      </div>
+      <a class="btn" href="/contact/?topic=${encodeURIComponent('AI Implementation & Workflow Automation')}">Find my first automation ${ARROW}</a>
+    </form>
+  </div>
+</section>`;
+
 /* ---------------- Home ---------------- */
 const problems = [
   ['Leads arrive, but follow-up is slow or forgotten', 'online-presence-lead-generation'],
@@ -183,7 +210,7 @@ emit('/', layout({
   nav: '/',
   title: `${site.name} — Business Growth & AI Solutions Consultant`,
   description: site.description,
-  schema: [website, person, { '@type': 'WebPage', '@id': abs('/#webpage'), url: abs('/'), name: `${site.name} — ${site.tagline}`, isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID }, inLanguage: 'en-IN' }],
+  schema: [website, person, { '@type': 'WebPage', '@id': abs('/#webpage'), url: abs('/'), name: `${site.name} — ${site.tagline}`, isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID }, inLanguage: 'en-IN' }, { '@type': 'FAQPage', '@id': abs('/#faq'), mainEntity: homeFaqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }],
   body: `
 <section class="hero">
   <div class="wrap hero-grid">
@@ -191,6 +218,7 @@ emit('/', layout({
       <p class="eyebrow" data-reveal>${esc(site.tagline)}</p>
       <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)}.</span> I find what's holding your business back — and build <em>the fix</em>.</h1>
       <p class="lede" data-reveal>${esc(site.message)} I work with small businesses on strategy, websites, marketing and AI automation — whatever the problem actually needs.</p>
+      <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>page one on Google</span><span>a business that runs without you</span></span></p>
       <div class="hero-actions" data-reveal>
         <a class="btn" href="${ctaHref}"${ctaAttrs}>Book a free strategy call ${ARROW}</a>
         <a class="btn btn-ghost" href="/services/">See how I help</a>
@@ -230,6 +258,19 @@ emit('/', layout({
   </div>
 </section>
 
+<section class="section section-tint" id="health-check">
+  <div class="wrap hc-wrap">
+    <header class="hc-intro" data-reveal>
+      <p class="eyebrow">Free 2-minute tool</p>
+      <h2>How healthy is your business, <em>really</em>?</h2>
+      <p class="lede">Answer eight quick questions. You'll get a growth score and the two areas worth fixing first — no email required.</p>
+    </header>
+    <div class="hc" data-reveal data-hc="${esc(JSON.stringify({ q: healthCheck, s: Object.fromEntries(services.map((s) => [s.slug, { t: s.title, u: `/services/${s.slug}/` }])) }))}">
+      <noscript><p>Turn on JavaScript to use the health check, or <a href="/contact/">ask me for a free diagnosis</a>.</p></noscript>
+    </div>
+  </div>
+</section>
+
 <section class="section section-ink">
   <div class="wrap">
     <header class="section-head split" data-reveal>
@@ -254,10 +295,35 @@ emit('/', layout({
       <li data-reveal><span class="num">03</span><h3>Build</h3><p>The website, campaign, process or AI automation that captures the opportunity.</p></li>
       <li data-reveal><span class="num">04</span><h3>Measure</h3><p>Clear numbers each week, so we keep what works and drop what doesn't.</p></li>
     </ol>
+    <dl class="stats" data-reveal>
+      <div><dt><span data-count="7">7</span></dt><dd>services under one roof — no hand-offs between agencies</dd></div>
+      <div><dt><span data-count="30">30</span><small>min</small></dt><dd>free first call to diagnose your biggest problem</dd></div>
+      <div><dt><span data-count="24">24</span><small>h</small></dt><dd>maximum reply time to every message</dd></div>
+      <div><dt><span data-count="100">100</span><small>%</small></dt><dd>fixed-price proposals — no surprise bills</dd></div>
+    </dl>
   </div>
 </section>
 
 <section class="section section-tint">
+  <div class="wrap">
+    <header class="section-head split" data-reveal>
+      <div><p class="eyebrow">Working together</p><h2>Three ways to start</h2></div>
+      <p class="muted">Every business is different, so there are no packages to squeeze into — just three clear ways to begin, scoped to your goals and budget.</p>
+    </header>
+    <div class="plans">
+      ${engagements.map((e) => `<article class="plan${e.featured ? ' is-featured' : ''}" data-reveal>
+        <p class="plan-tag">${esc(e.tag)}</p>
+        <h3>${esc(e.name)}</h3>
+        <p class="plan-len">${esc(e.length)}</p>
+        <p>${esc(e.summary)}</p>
+        <ul>${e.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+        <a class="btn${e.featured ? '' : ' btn-ghost'}" href="/contact/?topic=${encodeURIComponent(e.name)}">Start with ${esc(e.name)} ${ARROW}</a>
+      </article>`).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="section">
   <div class="wrap about-teaser">
     ${portrait()}
     <div data-reveal>
@@ -270,13 +336,20 @@ emit('/', layout({
   </div>
 </section>
 
-<section class="section">
+<section class="section section-tint">
   <div class="wrap">
     <header class="section-head split" data-reveal>
       <div><p class="eyebrow">Insights</p><h2>Notes on growth, AI and small business</h2></div>
       <a class="link" href="/insights/">All articles ${ARROW}</a>
     </header>
     <div class="card-grid three">${posts.map(postCard).join('')}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap two-col wide-left">
+    <header data-reveal><p class="eyebrow">FAQ</p><h2>Questions people ask before the first call</h2><p class="muted">Still unsure? <a class="link" href="${waHref}" target="_blank" rel="noopener">Ask me on WhatsApp ${ARROW}</a></p></header>
+    <div class="faqs">${homeFaqs.map(([q, a]) => `<details data-reveal><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div>
   </div>
 </section>
 ${ctaBand()}`,
@@ -356,6 +429,7 @@ services.forEach((s, idx) => {
     <ol class="deliverables">${s.deliverables.map((d, i) => `<li data-reveal><span class="num">${pad(i + 1)}</span>${esc(d)}</li>`).join('')}</ol>
   </div>
 </section>
+${s.slug === 'ai-implementation-workflow-automation' ? savingsCalc : ''}
 <section class="section">
   <div class="wrap">
     <header class="section-head" data-reveal><p class="eyebrow">Process</p><h2>How it works</h2></header>
@@ -481,6 +555,13 @@ posts.forEach((p) => {
   </header>
   ${p.image ? `<div class="wrap narrow">${pic(p.image, { cls: 'cover-img', eager: true })}</div>` : ''}
   <div class="wrap narrow prose article-body">${p.body}</div>
+  <div class="wrap narrow share" data-share>
+    <span>Share this article</span>
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(abs(path))}" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://wa.me/?text=${encodeURIComponent(p.title + ' — ' + abs(path))}" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="https://x.com/intent/post?text=${encodeURIComponent(p.title)}&amp;url=${encodeURIComponent(abs(path))}" target="_blank" rel="noopener">X</a>
+    <button type="button" data-copy="${abs(path)}">Copy link</button>
+  </div>
   <aside class="wrap narrow author-box">
     ${avatar('avatar lg')}
     <div><p class="footer-h">About the author</p><p><strong>${esc(site.name)}</strong> is a business growth and AI solutions consultant helping small businesses find what's holding them back and fix it. <a href="/about/">More about Piyush</a>.</p></div>
@@ -515,7 +596,8 @@ emit('/contact/', layout({
       </ol>
       <p class="direct" data-reveal>Prefer to reach out directly?<br>Email <a href="mailto:${site.email}">${site.email}</a><br>Call <a href="${telHref}">${esc(site.phone)}</a> or <a href="${waHref}" target="_blank" rel="noopener">message on WhatsApp</a>${site.calendarUrl ? `<br>Or <a href="${site.calendarUrl}" target="_blank" rel="noopener">pick a time on my calendar</a>.` : ''}</p>
     </div>
-    <form class="contact-form" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
+    <form class="contact-form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="_gotcha" data-reveal data-endpoint="${esc(site.formEndpoint)}" data-email="${esc(site.email)}" novalidate>
+      <input type="hidden" name="form-name" value="contact">
       <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
       <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
       <div class="field"><label for="f-company">Business / website <span>(optional)</span></label><input id="f-company" name="company" autocomplete="organization"></div>
@@ -534,6 +616,47 @@ emit('/contact/', layout({
 </section>`,
 }), { priority: '0.8' });
 
+/* ---------------- Privacy & thanks ---------------- */
+emit('/privacy/', layout({
+  path: '/privacy/',
+  title: `Privacy Policy | ${site.name}`,
+  description: `How ${site.name}'s website handles your information: what is collected, why, and your choices.`,
+  schema: [breadcrumb([['Privacy', '/privacy/']])],
+  body: `
+<section class="page-hero">
+  <div class="wrap narrow">
+    ${crumbs([['Privacy', '/privacy/']])}
+    <p class="eyebrow">Privacy</p>
+    <h1>Privacy policy</h1>
+    <p class="lede">Short version: I only collect what you choose to send me, I use it only to reply to you, and I never sell it.</p>
+  </div>
+</section>
+<section class="section pt0">
+  <div class="wrap narrow prose">
+    <h2>What I collect</h2>
+    <p>When you use the contact form, I receive the details you enter — your name, email, business and message. If you message me on WhatsApp or by email, I receive what you send there.</p>
+    <h2>How it is used</h2>
+    <p>Only to reply to your enquiry and, if we work together, to deliver that work. I don't add you to mailing lists without asking, and I never sell or rent your information.</p>
+    <h2>Where it is stored</h2>
+    <p>The website is hosted on Netlify, which processes contact-form submissions. Email is handled by Google. Both providers keep data secure under their own privacy policies.</p>
+    <h2>Cookies and tracking</h2>
+    <p>This site does not use advertising or tracking cookies. Fonts are loaded from Google Fonts, which may log basic technical information such as your IP address.</p>
+    <h2>The tools on this site</h2>
+    <p>The business health check and savings calculator run entirely in your browser. Your answers are not sent anywhere.</p>
+    <h2>Your choices</h2>
+    <p>You can ask me to see, correct or delete anything you've sent me at any time: <a href="mailto:${site.email}">${site.email}</a>.</p>
+    <p class="muted small">Last updated ${fmtDate(today)}.</p>
+  </div>
+</section>`,
+}), { priority: '0.3' });
+
+emit('/contact/thanks/', layout({
+  path: '/contact/thanks/', noindex: true,
+  title: `Thank you | ${site.name}`,
+  description: 'Your message has been received.',
+  body: `<section class="page-hero"><div class="wrap narrow"><p class="eyebrow">Message sent</p><h1>Thank you — <em>I'll be in touch</em> within one working day.</h1><p class="lede">Want a faster answer? <a href="${waHref}" target="_blank" rel="noopener">Message me on WhatsApp</a>. Meanwhile, you might like the <a href="/#health-check">business health check</a> or the latest <a href="/insights/">insights</a>.</p></div></section>`,
+}), { sitemap: false });
+
 /* ---------------- 404, sitemap, robots, feed, manifest ---------------- */
 emit('/404.html', layout({
   path: '/404.html', noindex: true,
@@ -551,6 +674,7 @@ ${pages.map((p) => `  <url><loc>${abs(p.path)}</loc><lastmod>${p.lastmod}</lastm
 writeFileSync(join(out, 'robots.txt'), `User-agent: *
 Allow: /
 Disallow: /404.html
+Disallow: /contact/thanks/
 
 Sitemap: ${abs('/sitemap.xml')}
 `);

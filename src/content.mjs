@@ -366,3 +366,49 @@ export const posts = [
 `,
   },
 ];
+
+// Homepage "Business health check" quiz. A "No" answer points to the linked service.
+export const healthCheck = [
+  { q: 'New enquiries get a reply within an hour.', service: 'online-presence-lead-generation' },
+  { q: 'My website clearly says who I help and what to do next.', service: 'website-development' },
+  { q: 'We show up on Google when people search for what we sell.', service: 'digital-marketing-seo' },
+  { q: 'I know which marketing channel brings in the most customers.', service: 'digital-marketing-seo' },
+  { q: 'My team spends less than 5 hours a week on repetitive admin.', service: 'ai-implementation-workflow-automation' },
+  { q: 'The business runs smoothly for a week without me.', service: 'business-weakness-analysis-process-improvement' },
+  { q: 'I have compared my prices and offer with competitors in the last year.', service: 'market-research-competitor-analysis' },
+  { q: 'I have a written growth plan for this year.', service: 'business-consulting-growth-strategy' },
+];
+
+// Ways to work together (no fixed prices — scoped to each business).
+export const engagements = [
+  {
+    name: 'Diagnose',
+    tag: 'Start here',
+    length: '2–3 weeks',
+    summary: 'A focused look at your business to find what is holding growth back and where the quickest wins are.',
+    points: ['Business and customer interviews', 'Leak register with monthly cost of each problem', 'Ranked opportunity map', '90-day action plan'],
+  },
+  {
+    name: 'Build',
+    tag: 'Most popular',
+    length: '3–8 weeks',
+    summary: 'A fixed-scope project that ships the fix: a website, an automation, a campaign or a new process.',
+    points: ['Clear scope, timeline and price up front', 'Weekly progress updates', 'Launch, training and handover', '30 days of post-launch support'],
+    featured: true,
+  },
+  {
+    name: 'Grow',
+    tag: 'Ongoing',
+    length: 'Monthly',
+    summary: 'A long-term growth partner: strategy, marketing and automation, reviewed against your numbers every month.',
+    points: ['Monthly growth review and plan', 'Ongoing SEO, content and campaigns', 'New automations as you scale', 'Priority WhatsApp access'],
+  },
+];
+
+export const homeFaqs = [
+  ['What kind of businesses do you work with?', 'Small and owner-led businesses — local services, manufacturers, traders, travel, retail and professional firms. If you have customers and want more of the right ones, we should talk.'],
+  ['Do you work with clients outside my city?', 'Yes. Most work happens over video calls, WhatsApp and shared documents, so I work with businesses across India and abroad.'],
+  ['How much does it cost?', 'It depends on scope. Every project starts with a free 30-minute call; after it you get a clear proposal with a fixed price, so there are no surprises. Tell me your budget and I will tell you honestly what it can achieve.'],
+  ['How quickly can we start?', 'Usually within one to two weeks of the first call. Small fixes, like a sharper homepage or a first automation, can often go live in days.'],
+  ['What should I prepare for the first call?', 'Nothing formal. A rough idea of your monthly revenue, where customers come from, and the one problem you most want solved is plenty.'],
+];

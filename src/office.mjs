@@ -4,12 +4,12 @@
 export const officeOptions = [
   ['Not sure yet — need a diagnosis', 'Tell me what feels stuck'],
   ['Business Consulting & Growth Strategy', 'A clear 90-day plan'],
-  ['AI Implementation & Workflow Automation', 'Save hours every week'],
-  ['Website Development', 'A site that brings enquiries'],
-  ['Digital Marketing & SEO', 'Get found on Google'],
-  ['Online Presence & Lead Generation', 'A steady flow of leads'],
-  ['Market Research & Competitor Analysis', 'Know your market'],
   ['Business Weakness Analysis & Process Improvement', 'Fix the leaks'],
+  ['Market Research & Competitor Analysis', 'Know your market'],
+  ['AI Implementation & Workflow Automation', 'Save hours every week'],
+  ['Online Presence & Lead Generation', 'A steady flow of leads'],
+  ['Digital Marketing & SEO', 'Get found on Google'],
+  ['Website Development', 'A site that brings enquiries'],
   ['Professional opportunity / collaboration', 'Partnerships, speaking, roles'],
 ];
 

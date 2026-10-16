@@ -234,24 +234,24 @@ const savingsCalc = `
 
 /* ---------------- Home ---------------- */
 const problems = [
-  ['Leads arrive, but follow-up is slow or forgotten', 'online-presence-lead-generation', 'Fixable. Let\'s make sure no lead goes cold.'],
-  ['The website looks fine but rarely produces enquiries', 'website-development', 'Fixable. Let\'s make it actually sell.'],
-  ['Your team loses hours to copy-paste and reporting', 'ai-implementation-workflow-automation', 'Fixable. Let AI do the boring bits.'],
-  ['Competitors show up on Google and you don\'t', 'digital-marketing-seo', 'Fixable. Let\'s get you found.'],
-  ['Growth has stalled and the next move isn\'t obvious', 'business-consulting-growth-strategy', 'Fixable. Let\'s find the next move.'],
+  ['Sales are growing, but profit isn\'t', 'business-consulting-growth-strategy', 'Fixable. Let\'s find where the margin goes.'],
   ['Everything still runs through the owner', 'business-weakness-analysis-process-improvement', 'Fixable. Let\'s free up your calendar.'],
+  ['We keep losing deals and don\'t know why', 'market-research-competitor-analysis', 'Fixable. Let\'s see what your buyers see.'],
+  ['Growth has stalled and the next move isn\'t obvious', 'business-consulting-growth-strategy', 'Fixable. Let\'s build a 90-day plan.'],
+  ['Leads arrive, but follow-up is slow or forgotten', 'online-presence-lead-generation', 'Fixable. Let\'s make sure no lead goes cold.'],
+  ['Your team loses hours to copy-paste and reporting', 'ai-implementation-workflow-automation', 'Fixable. Let AI do the boring bits.'],
 ];
 // bento layout for the homepage services: [slug, size, tone]
 const bento = [
   ['business-consulting-growth-strategy', 'xl', 'img'],
-  ['ai-implementation-workflow-automation', 'wide', 'zap'],
-  ['website-development', 'sq', 'lime'],
-  ['digital-marketing-seo', 'sq', 'paper'],
+  ['business-weakness-analysis-process-improvement', 'wide', 'coral'],
+  ['market-research-competitor-analysis', 'sq', 'zap'],
+  ['ai-implementation-workflow-automation', 'sq', 'ink'],
   ['online-presence-lead-generation', 'wide', 'img'],
-  ['market-research-competitor-analysis', 'sq', 'ink'],
-  ['business-weakness-analysis-process-improvement', 'sq', 'coral'],
+  ['digital-marketing-seo', 'sq', 'lime'],
+  ['website-development', 'sq', 'paper'],
 ];
-const tickerItems = ['Growth strategy', 'AI automation', 'Websites that sell', 'SEO & Google visibility', 'WhatsApp lead flows', 'Market research', 'Process fixes', '90-day plans', 'No jargon', 'Business first'];
+const tickerItems = ['Business consulting', 'Growth strategy', 'Pricing & margins', 'Process fixes', 'Market research', '90-day plans', 'AI automation', 'Lead follow-up', 'Websites that sell', 'Business first'];
 
 emit('/', layout({
   path: '/',
@@ -265,15 +265,15 @@ emit('/', layout({
     <div class="hero-copy">
       <p class="status-pill" data-reveal><span class="live-dot" aria-hidden="true"></span>${esc(site.tagline)}<span class="pill-extra"> · replies within 24h</span></p>
       <h1 data-reveal><span class="hello">Hi, I'm ${esc(site.name)} 👋</span> I find what's holding your business back and build <em class="hl">the fix</em>.</h1>
-      <p class="lede" data-reveal>${esc(site.message)} I work with small businesses on strategy, websites, marketing and AI automation — whatever the problem actually needs.</p>
-      <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a website that sells</span><span>an AI assistant that replies in minutes</span><span>a 90-day growth plan</span><span>more customers from Google</span><span>a business that runs without you</span></span></p>
+      <p class="lede" data-reveal>${esc(site.message)} I'm a business consultant first: I work with owners on strategy, profit, pricing and processes, then build whatever the plan needs, from AI automation to websites and marketing.</p>
+      <p class="rotator" data-reveal aria-live="off">Today that could be <span class="rot-words"><span class="is-on">a 90-day growth plan</span><span>a business that runs without you</span><span>healthier margins</span><span>an AI assistant that replies in minutes</span><span>a website that sells</span></span></p>
       <div class="hero-actions" data-reveal>
         <a class="btn" href="${ctaHref}"${ctaAttrs}>Book a free strategy call ${ARROW}</a>
         <a class="btn btn-ghost" href="#health-check">Take the 2-minute health check</a>
       </div>
     </div>
     <div class="diag-wrap">
-    <span class="sticker sticker-1" aria-hidden="true">AI-powered ⚡</span>
+    <span class="sticker sticker-1" aria-hidden="true">Strategy + AI ⚡</span>
     <span class="sticker sticker-2" aria-hidden="true">No jargon</span>
     <span class="sticker sticker-3" aria-hidden="true">Business first ✓</span>
     <aside class="diag" data-reveal aria-label="Example of a business growth diagnostic">
@@ -338,7 +338,7 @@ emit('/', layout({
   <div class="wrap">
     <header class="section-head split" data-reveal>
       <div><p class="eyebrow">Services</p><h2>Seven ways I help businesses grow</h2></div>
-      <p>Each service stands on its own, but they work best together: understand the business, find the opportunity, then build the solution.</p>
+      <p>Consulting comes first: understand the business, find the opportunity, then build the solution. Strategy, processes and research lead; technology follows the plan.</p>
     </header>
     <ul class="bento">
       ${bento.map(([slug, size, tone]) => { const s = svc(slug); return `<li class="tile tile-${size} tone-${tone}" data-reveal><a href="/services/${s.slug}/">
@@ -354,7 +354,7 @@ emit('/', layout({
   <div class="wrap">
     <header class="section-head" data-reveal>
       <p class="eyebrow">Approach</p>
-      <h2>From problem to working solution</h2>
+      <h2>Consulting first. Then we build.</h2>
     </header>
     <ol class="steps">
       <li data-reveal><span class="num">01</span><h3>Understand</h3><p>How you make money, where customers come from, and where time and revenue leak.</p></li>

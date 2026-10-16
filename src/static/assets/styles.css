@@ -961,3 +961,34 @@ h1 em, h2 em { font-style: italic; color: var(--ink); background: linear-gradien
 @media print { .bot, .bot-restore { display: none !important; } }
 
 @media (max-width: 520px) { .pill-extra { display: none; } .status-pill { font-size: .78rem; } }
+
+/* ===================== Mobile polish ===================== */
+/* readable small labels */
+.diag-tag { font-size: .7rem; }
+.diag-list .st { font-size: .76rem; }
+.facts dt, .footer-h, .case-meta dt { font-size: .74rem; }
+
+/* calculator sliders: a 32px touch area with a slim visible track */
+.calc input[type=range] { height: 32px; background: transparent; border-radius: 0; }
+.calc input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--accent) var(--fill, 50%), var(--paper-2) var(--fill, 50%)); }
+.calc input[type=range]::-webkit-slider-thumb { margin-top: -8px; }
+.calc input[type=range]::-moz-range-track { height: 6px; border-radius: 99px; background: var(--paper-2); }
+.calc input[type=range]::-moz-range-progress { height: 6px; border-radius: 99px; background: var(--accent); }
+@media (pointer: coarse) {
+  .calc input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; margin-top: -10px; }
+  .calc input[type=range]::-moz-range-thumb { width: 24px; height: 24px; }
+}
+
+/* office on phones and tablets: keep bubbles clear of the faces */
+@media (max-width: 900px) {
+  .bubble, .bubble-clerk, .bubble-boss { left: 3%; right: auto; top: 5%; max-width: 40%; font-size: .74rem; padding: .5rem .65rem; border-radius: 12px; }
+  .bubble b { font-size: .6rem; margin-bottom: .2rem; }
+  .bubble::after, .bubble-boss::after { display: none; }
+  .slip { left: 3%; right: auto; bottom: 4%; width: 36%; }
+}
+@media (max-width: 600px) {
+  .slip { width: 40%; padding: .45rem .5rem .4rem; font-size: .58rem; }
+  .slip header { font-size: .5rem; padding-bottom: .25rem; margin-bottom: .25rem; }
+  .slip dl dt:nth-of-type(n+3), .slip dl dd:nth-of-type(n+3) { display: none; }
+  .slip footer { margin-top: .25rem; padding-top: .25rem; }
+}

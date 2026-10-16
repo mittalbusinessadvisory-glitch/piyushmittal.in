@@ -1,4 +1,8 @@
 /* Piyush Mittal — design system. Editorial, warm paper + ink, one green accent. */
+/* Self-hosted, subset fonts (built by tools/build_fonts.py) */
+@font-face { font-family: 'Fraunces'; src: url('/assets/fonts/fraunces.woff2') format('woff2'); font-weight: 300 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Fraunces'; src: url('/assets/fonts/fraunces-italic.woff2') format('woff2'); font-weight: 300 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('/assets/fonts/inter.woff2') format('woff2'); font-weight: 400 600; font-style: normal; font-display: swap; }
 :root {
   --paper: #f5f2ea;
   --paper-2: #ece7db;
@@ -36,7 +40,7 @@ a { color: inherit; }
 ::selection { background: var(--accent); color: var(--on-ink); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
-h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.015em; line-height: 1.1; margin: 0 0 .5em; font-variation-settings: 'opsz' 72; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.015em; line-height: 1.1; margin: 0 0 .5em; }
 h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); letter-spacing: -0.02em; }
 h2 { font-size: clamp(1.9rem, 3.6vw, 2.9rem); }
 h3, .h3 { font-size: 1.4rem; font-family: var(--serif); font-weight: 400; line-height: 1.25; }

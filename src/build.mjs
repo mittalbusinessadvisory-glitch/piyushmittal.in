@@ -1,5 +1,6 @@
 // Zero-dependency static site generator. Run: node src/build.mjs  → outputs ./dist
-import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, cpSync, existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { site } from './config.mjs';
@@ -22,10 +23,24 @@ const ctaAttrs = site.calendarUrl ? ' target="_blank" rel="noopener"' : '';
 const pad = (n) => String(n).padStart(2, '0');
 const telHref = `tel:${site.phoneE164}`;
 const waHref = `https://wa.me/${site.phoneE164.replace('+', '')}`;
+// Responsive images: AVIF/WebP/JPEG at 480/800/1200 px (tools/build_images.py)
+const SIZES = {
+  'card-img': '(max-width: 760px) calc(100vw - 32px), (max-width: 980px) 50vw, 380px',
+  'media-img': '(max-width: 980px) calc(100vw - 32px), 460px',
+  'cover-img': '(max-width: 780px) calc(100vw - 32px), 740px',
+};
+const variants = (src, ext, widths) => widths.map((w) => `${src.replace('.jpg', `-${w}.${ext}`)} ${w}w`).join(', ');
+const pic = (im, { cls = '', eager = false } = {}) => {
+  const widths = [480, 800, 1200].filter((w) => w <= im.w);
+  const sizes = SIZES[cls] || '100vw';
+  return `<picture${cls ? ` class="${cls}"` : ''}>`
+    + `<source type="image/avif" srcset="${variants(im.src, 'avif', widths)}" sizes="${sizes}">`
+    + `<source type="image/webp" srcset="${variants(im.src, 'webp', widths)}" sizes="${sizes}">`
+    + `<img src="${im.src.replace('.jpg', '-800.jpg')}" srcset="${variants(im.src, 'jpg', widths)}" sizes="${sizes}" alt="${esc(im.alt)}" width="${im.w}" height="${im.h}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+};
+const preloadImg = (im, cls) => im ? `<link rel="preload" as="image" type="image/avif" imagesrcset="${variants(im.src, 'avif', [480, 800, 1200].filter((w) => w <= im.w))}" imagesizes="${SIZES[cls]}" fetchpriority="high">` : '';
 const portrait = (eager = false) =>
-  `<picture class="portrait" data-reveal><source srcset="${site.photo.replace('.jpg', '.webp')}" type="image/webp"><img src="${site.photo}" alt="${esc(site.name)}, business growth and AI solutions consultant" width="520" height="650"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
-const pic = (im, { cls = '', eager = false } = {}) =>
-  `<picture${cls ? ` class="${cls}"` : ''}><source srcset="${im.src.replace('.jpg', '.webp')}" type="image/webp"><img src="${im.src}" alt="${esc(im.alt)}" width="${im.w}" height="${im.h}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+  `<picture class="portrait" data-reveal><source type="image/avif" srcset="/assets/piyush-mittal-480.avif 480w"><source type="image/webp" srcset="/assets/piyush-mittal-480.webp 480w"><img src="${site.photo}" srcset="/assets/piyush-mittal-480.jpg 480w, ${site.photo} 520w" sizes="(max-width: 980px) 280px, 400px" alt="${esc(site.name)}, business growth and AI solutions consultant" width="520" height="650"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
 const avatar = (cls = 'avatar') => `<img class="${cls}" src="${site.headshot}" alt="" width="64" height="64" loading="lazy" decoding="async">`;
 
 const PERSON_ID = abs('/#person');
@@ -52,7 +67,7 @@ const breadcrumb = (trail) => ({
 
 const ARROW = '<svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null }) {
+function layout({ path, title, description, body, schema = [], type = 'website', nav = '', noindex = false, image = null, hero = '' }) {
   const shareImage = image ? abs(image.src) : abs('/assets/og-image.png');
   const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
@@ -86,9 +101,9 @@ ${noindex ? '<meta name="robots" content="noindex">' : '<meta name="robots" cont
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="application/rss+xml" title="${esc(site.name)} — Insights" href="/insights/feed.xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&display=swap">
+<link rel="preload" href="/assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+${hero}
 <link rel="stylesheet" href="/assets/styles.css">
 <script>document.documentElement.classList.add('js')</script>
 ${schema.length ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>` : ''}
@@ -391,6 +406,7 @@ services.forEach((s, idx) => {
     nav: '/services/',
     title: `${s.title} | ${site.name}`,
     image: s.image,
+    hero: preloadImg(s.image, 'media-img'),
     description: s.metaDescription,
     schema: [
       breadcrumb([['Services', '/services/'], [s.title, path]]),
@@ -459,6 +475,7 @@ emit('/about/', layout({
   title: `About ${site.name} — Business Growth & AI Consultant`,
   description: `About ${site.name}: a business growth and AI solutions consultant who helps small businesses identify opportunities and turn ideas into practical solutions.`,
   type: 'profile',
+  hero: '<link rel="preload" as="image" type="image/avif" href="/assets/piyush-mittal-480.avif" fetchpriority="high">',
   schema: [breadcrumb([['About', '/about/']]), { '@type': 'ProfilePage', '@id': abs('/about/#profile'), url: abs('/about/'), name: `About ${site.name}`, mainEntity: { '@id': PERSON_ID }, isPartOf: { '@id': WEBSITE_ID }, dateModified: today }, person],
   body: `
 <section class="page-hero">
@@ -535,6 +552,7 @@ posts.forEach((p) => {
     nav: '/insights/',
     title: `${p.title} | ${site.name}`,
     image: p.image,
+    hero: preloadImg(p.image, 'cover-img'),
     description: p.description,
     type: 'article',
     schema: [
@@ -689,4 +707,56 @@ ${posts.map((p) => `<item><title>${esc(p.title)}</title><link>${abs(`/insights/$
 
 writeFileSync(join(out, 'site.webmanifest'), JSON.stringify({ name: site.name, short_name: 'PM', start_url: '/', display: 'browser', background_color: '#f5f2ea', theme_color: '#f5f2ea', icons: [{ src: '/assets/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
 
-console.log(`Built ${pages.length} pages → dist/`);
+/* ---------------- Post-processing: minify, fingerprint, headers ---------------- */
+const hash = (s) => createHash('sha256').update(s).digest('hex').slice(0, 10);
+const minCss = (s) => s
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/\s+/g, ' ')
+  .replace(/\s*([{};,>])\s*/g, '$1')
+  .replace(/;}/g, '}')
+  .trim();
+// conservative: drop comment-only lines and indentation, keep line breaks (no ASI risk)
+const minJs = (s) => s.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('//') && !l.startsWith('/*')).join('\n');
+const assets = {};
+for (const [file, min] of [['styles.css', minCss], ['site.js', minJs]]) {
+  const p = join(out, 'assets', file);
+  const code = min(readFileSync(p, 'utf8'));
+  const name = file.replace('.', `.${hash(code)}.`);
+  writeFileSync(join(out, 'assets', name), code);
+  rmSync(p);
+  assets[`/assets/${file}`] = `/assets/${name}`;
+}
+const htmlFiles = [];
+(function walk(d) { for (const f of readdirSync(d)) { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') && htmlFiles.push(p); } })(out);
+const INLINE_JS = "document.documentElement.classList.add('js')";
+for (const f of htmlFiles) {
+  let h = readFileSync(f, 'utf8');
+  for (const [from, to] of Object.entries(assets)) h = h.split(`"${from}"`).join(`"${to}"`);
+  h = h.split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
+  writeFileSync(f, h);
+}
+const scriptHash = createHash('sha256').update(INLINE_JS).digest('base64');
+const csp = [
+  "default-src 'self'", `script-src 'self' 'sha256-${scriptHash}'`, "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:", "font-src 'self'", `connect-src 'self'${site.formEndpoint ? ' ' + new URL(site.formEndpoint).origin : ''}`,
+  "form-action 'self'", "frame-ancestors 'self'", "base-uri 'self'", "object-src 'none'", 'upgrade-insecure-requests',
+].join('; ');
+writeFileSync(join(out, '_headers'), `/*
+  Content-Security-Policy: ${csp}
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/assets/*.css
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/img/*
+  Cache-Control: public, max-age=2592000
+`);
+
+console.log(`Built ${pages.length} pages → dist/ (${Object.values(assets).join(', ')})`);

@@ -258,16 +258,6 @@ emit('/', layout({
 </section>
 
 <section class="section section-tint">
-  <div class="wrap">
-    <header class="section-head split" data-reveal>
-      <div><p class="eyebrow">Selected work</p><h2>Real businesses, real problems</h2></div>
-      <a class="link" href="/work/">All case studies ${ARROW}</a>
-    </header>
-    <div class="card-grid">${work.map(workCard).join('')}</div>
-  </div>
-</section>
-
-<section class="section">
   <div class="wrap about-teaser">
     <div class="portrait" data-reveal aria-hidden="true"><span>PM</span></div>
     <div data-reveal>
@@ -280,7 +270,7 @@ emit('/', layout({
   </div>
 </section>
 
-<section class="section section-tint">
+<section class="section">
   <div class="wrap">
     <header class="section-head split" data-reveal>
       <div><p class="eyebrow">Insights</p><h2>Notes on growth, AI and small business</h2></div>

@@ -5,12 +5,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# One canonical address: send the bare domain and the Netlify subdomain to https://www.piyushmittal.in
-[[redirects]]
-  from = "https://piyushmittal.in/*"
-  to = "https://www.piyushmittal.in/:splat"
-  status = 301
-  force = true
+# The bare domain -> www redirect is handled by Netlify: www.piyushmittal.in is set as the primary domain.
 
 [[headers]]
   for = "/*"

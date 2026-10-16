@@ -91,7 +91,7 @@ function layout({ path, title, description, body, schema = [], type = 'website',
   const shareImage = image ? abs(image.src) : abs('/assets/og-image.jpg');
   const shareSize = image ? [image.w, image.h] : [1200, 630];
   const url = abs(path);
-  const navItems = [['Services', '/services/'], ['Office', '/office/'], ['About', '/about/'], ['Insights', '/insights/']];
+  const navItems = [['Home', '/'], ['Services', '/services/'], ['Office', '/office/'], ['About', '/about/'], ['Insights', '/insights/']];
   const jsonld = { '@context': 'https://schema.org', '@graph': schema };
   return `<!doctype html>
 <html lang="en-IN">
